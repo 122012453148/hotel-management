@@ -107,79 +107,82 @@ const Hotels = () => {
         </div>
       </div>
 
-      <div className="hotels-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 320px) 1fr', gap: '4rem' }}>
-        <div className="desktop-filter-sidebar glass-morphism" style={{ padding: '2rem', borderRadius: '24px', height: 'fit-content', position: 'sticky', top: '100px' }}>
-          <SearchFilterSidebar 
-            filters={filters} 
-            setFilters={(f) => {setFilters(f); setPage(1);}} 
-            onClear={clearFilters} 
-          />
-        </div>
+      {/* Mobile Filter Toggle Button — lives OUTSIDE the grid */}
+      <div className="mobile-filter-fab" style={{ display: 'none', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+        <button
+          onClick={() => setIsMobileFilterOpen(true)}
+          style={{
+            backgroundColor: 'var(--primary)',
+            color: 'var(--secondary)',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '30px',
+            fontWeight: 800,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 6px 20px rgba(161, 188, 152, 0.4)',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          <SlidersHorizontal size={18} /> Filters
+        </button>
+      </div>
 
-        {/* Mobile Filter Toggle */}
-        <div className="filter-sidebar-mobile">
-          <button 
-            onClick={() => setIsMobileFilterOpen(true)}
-            style={{ 
-              backgroundColor: 'var(--primary)', 
-              color: 'var(--secondary)', 
-              padding: '1rem 2rem', 
-              borderRadius: '30px', 
-              fontWeight: 800, 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '10px',
-              boxShadow: '0 10px 30px rgba(161, 188, 152, 0.4)'
-            }}
-          >
-            <SlidersHorizontal size={20} /> Filters
-          </button>
+      <div className="hotels-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 300px) 1fr', gap: '3rem' }}>
+        {/* Desktop Sidebar */}
+        <div className="desktop-filter-sidebar glass-morphism" style={{ padding: '2rem', borderRadius: '24px', height: 'fit-content', position: 'sticky', top: '100px' }}>
+          <SearchFilterSidebar
+            filters={filters}
+            setFilters={(f) => { setFilters(f); setPage(1); }}
+            onClear={clearFilters}
+          />
         </div>
 
         {/* Mobile Filter Overlay */}
         <AnimatePresence>
           {isMobileFilterOpen && (
             <>
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsMobileFilterOpen(false)}
                 style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, backdropFilter: 'blur(5px)' }}
               />
-              <motion.div 
+              <motion.div
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                style={{ 
-                  position: 'fixed', 
-                  top: 0, 
-                  right: 0, 
-                  bottom: 0, 
-                  width: '90%', 
-                  maxWidth: '350px', 
-                  backgroundColor: 'white', 
-                  zIndex: 1001, 
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  width: '90%',
+                  maxWidth: '350px',
+                  backgroundColor: 'white',
+                  zIndex: 1001,
                   padding: '2rem',
-                  overflowY: 'auto'
+                  overflowY: 'auto',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                   <h3 style={{ margin: 0 }}>Filters</h3>
-                  <button onClick={() => setIsMobileFilterOpen(false)} style={{ background: 'none', border: 'none' }}><X size={24} /></button>
+                  <button onClick={() => setIsMobileFilterOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={24} /></button>
                 </div>
-                <SearchFilterSidebar 
-                  filters={filters} 
-                  setFilters={(f) => {setFilters(f); setPage(1);}} 
-                  onClear={() => { clearFilters(); setIsMobileFilterOpen(false); }} 
+                <SearchFilterSidebar
+                  filters={filters}
+                  setFilters={(f) => { setFilters(f); setPage(1); }}
+                  onClear={() => { clearFilters(); setIsMobileFilterOpen(false); }}
                 />
               </motion.div>
             </>
           )}
         </AnimatePresence>
 
-        <main>
+        <main style={{ minWidth: 0 }}>
           {loading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               {[1, 2, 3].map(i => (
@@ -189,22 +192,22 @@ const Hotels = () => {
           ) : (
             <>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {hotels.map((hotel, index) => (
+                {hotels.map((hotel) => (
                   <HotelListItem key={hotel._id} hotel={hotel} />
                 ))}
               </div>
-              
-              <Pagination 
-                page={page} 
-                pages={pages} 
-                onPageChange={setPage} 
+
+              <Pagination
+                page={page}
+                pages={pages}
+                onPageChange={setPage}
               />
 
               {hotels.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '10rem 0', backgroundColor: '#f9fafb', borderRadius: '30px' }}>
+                <div style={{ textAlign: 'center', padding: '8rem 0', backgroundColor: '#f9fafb', borderRadius: '30px' }}>
                   <Search size={48} color="#d1d5db" style={{ marginBottom: '1.5rem' }} />
                   <h3 style={{ fontSize: '1.5rem', color: '#6b7280' }}>No places found matching your search.</h3>
-                  <button onClick={clearFilters} style={{ marginTop: '1.5rem', color: 'var(--primary)', fontWeight: 700 }}>Show all hotels</button>
+                  <button onClick={clearFilters} style={{ marginTop: '1.5rem', color: 'var(--primary)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>Show all hotels</button>
                 </div>
               )}
             </>
@@ -217,32 +220,40 @@ const Hotels = () => {
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         @media (max-width: 992px) {
-           .hotels-layout {
-              grid-template-columns: 1fr !important;
-              gap: 2rem !important;
-           }
+          .hotels-layout {
+            grid-template-columns: 1fr !important;
+            gap: 0 !important;
+          }
+          /* Hide desktop sidebar */
+          .desktop-filter-sidebar {
+            display: none !important;
+          }
+          /* Show floating filter FAB */
+          .mobile-filter-fab {
+            display: flex !important;
+          }
         }
 
         @media (max-width: 768px) {
-           .hotels-container {
-              padding: 2rem 1rem !important;
-           }
-           .hotels-title {
-              font-size: 2rem !important;
-              letter-spacing: -1px !important;
-              line-height: 1.2;
-           }
-           .hotels-subtitle {
-              font-size: 1rem !important;
-           }
-           .search-form-flex {
-              padding: 0.25rem !important;
-              border-radius: 14px !important;
-           }
-           .search-submit-btn {
-              padding: 0 1.25rem !important;
-              border-radius: 12px !important;
-           }
+          .hotels-container {
+            padding: 2rem 0 !important;
+          }
+          .hotels-title {
+            font-size: 2rem !important;
+            letter-spacing: -1px !important;
+            line-height: 1.2;
+          }
+          .hotels-subtitle {
+            font-size: 1rem !important;
+          }
+          .search-form-flex {
+            padding: 0.25rem !important;
+            border-radius: 14px !important;
+          }
+          .search-submit-btn {
+            padding: 0 1.25rem !important;
+            border-radius: 12px !important;
+          }
         }
       `}</style>
     </div>

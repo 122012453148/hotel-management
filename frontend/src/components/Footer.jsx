@@ -62,13 +62,13 @@ const Footer = () => {
           <div>
             <h4 style={{ color: 'white', marginBottom: '2rem', fontWeight: 600, textTransform: 'uppercase', fontSize: '16px' }}>Newsletter</h4>
             <p style={{ color: '#777777', marginBottom: '1.5rem', fontSize: '14px' }}>Subscribe to get the latest updates and offers.</p>
-            <div style={{ display: 'flex' }}>
+            <div className="footer-newsletter-row" style={{ display: 'flex' }}>
               <input 
                 type="email" 
                 placeholder="Your email" 
                 style={{ backgroundColor: 'white', border: 'none', padding: '12px 20px', flex: 1, borderRadius: 0, fontSize: '13px' }} 
               />
-              <button className="btn-primary" style={{ padding: '0 20px' }}>Join</button>
+              <button className="btn-primary" style={{ padding: '0 20px', flexShrink: 0 }}>Join</button>
             </div>
           </div>
         </div>

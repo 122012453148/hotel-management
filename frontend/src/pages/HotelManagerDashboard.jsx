@@ -518,21 +518,21 @@ const HotelManagerDashboard = () => {
           <ManagerSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
         <main style={{ textAlign: 'left', minWidth: 0 }}>
-          <div className="manager-header-flex" style={{ 
+          <div className="manager-header-flex glass-morphism" style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center', 
             marginBottom: '40px',
             backgroundColor: 'white',
-            padding: '1.5rem 2rem',
+            padding: '1.25rem 2rem',
             borderRadius: '24px',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.02)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
             border: '1px solid #f1f5f9',
-            flexWrap: 'wrap',
-            gap: '1.5rem'
+            gap: '1rem',
+            flexWrap: 'nowrap'
           }}>
-            <div style={{ minWidth: '200px' }}>
-              <h1 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--secondary)', letterSpacing: '-0.5px', marginBottom: '4px', lineHeight: 1.1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h1 className="manager-header-title" style={{ fontSize: '24px', fontWeight: 900, color: 'var(--secondary)', letterSpacing: '-0.5px', marginBottom: '2px', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {activeTab === 'dashboard' ? 'Portfolio Overview' :
                  activeTab === 'hotels' ? 'My Properties' :
                  activeTab === 'addHotel' ? 'Register Property' :
@@ -541,29 +541,58 @@ const HotelManagerDashboard = () => {
                  activeTab === 'analytics' ? 'Business Intelligence' :
                  activeTab === 'bookings' ? 'Guest Reservations' : 'Guest Reviews'}
               </h1>
-              <p style={{ color: 'var(--text-light)', fontSize: '14px', fontWeight: 500 }}>Welcome back, {user?.name.split(' ')[0]}. Manage your hospitality empire.</p>
-              {activeTab === 'manageRooms' && selectedHotel && (
-                <button onClick={() => setSelectedHotel(null)} style={{ marginTop: '12px', color: 'var(--primary)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', borderRadius: '10px', border: '1.5px solid var(--primary)', backgroundColor: 'transparent', cursor: 'pointer', transition: '0.2s', fontSize: '12px' }}>
-                  <ArrowRight style={{ transform: 'rotate(180deg)' }} size={16} /> Change Hotel
-                </button>
-              )}
+              <p className="manager-header-subtitle" style={{ color: 'var(--text-light)', fontSize: '13px', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Welcome back, {user?.name?.split(' ')[0]}.</p>
             </div>
- 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingRight: '2rem', borderRight: '1px solid #e2e8f0' }} className="hide-mobile">
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingRight: '1.5rem', borderRight: '1px solid #e2e8f0' }} className="hide-tablet">
                 <NotificationPanel />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontWeight: 800, color: 'var(--secondary)', fontSize: '14px' }}>{user?.name}</p>
-                  <p style={{ fontSize: '12px', color: 'var(--text-light)', fontWeight: 600 }}>Hotel Manager</p>
+              <div className="manager-profile-container" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ textAlign: 'right' }} className="hide-mobile">
+                  <p style={{ fontWeight: 800, color: 'var(--secondary)', fontSize: '14px', lineHeight: 1.1 }}>{user?.name}</p>
+                  <p style={{ fontSize: '11px', color: 'var(--text-light)', fontWeight: 600 }}>Hotel Manager</p>
                 </div>
-                <div style={{ width: '45px', height: '45px', borderRadius: '15px', backgroundColor: 'var(--primary)', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', fontWeight: 900 }}>
+                <div style={{ 
+                  width: '42px', 
+                  height: '42px', 
+                  borderRadius: '12px', 
+                  backgroundColor: 'var(--primary)', 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  color: 'white', 
+                  fontWeight: 900,
+                  fontSize: '16px',
+                  boxShadow: '0 4px 10px rgba(174, 183, 132, 0.3)'
+                }}>
                   {user?.name?.charAt(0) || 'M'}
                 </div>
               </div>
             </div>
           </div>
+
+          <style>{`
+            @media (max-width: 768px) {
+              .manager-header-flex {
+                padding: 1rem !important;
+                margin-bottom: 2rem !important;
+                border-radius: 20px !important;
+                gap: 0.5rem !important;
+              }
+              .manager-header-title {
+                font-size: 18px !important;
+              }
+              .manager-header-subtitle {
+                font-size: 11px !important;
+              }
+              .hide-mobile { display: none !important; }
+              .manager-profile-container { gap: 0 !important; }
+            }
+            @media (max-width: 1024px) {
+              .hide-tablet { display: none !important; }
+            }
+          `}</style>
 
           <AnimatePresence mode="wait">
             {loading ? (

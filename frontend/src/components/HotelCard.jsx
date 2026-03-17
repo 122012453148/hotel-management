@@ -39,18 +39,22 @@ const HotelCard = ({ hotel }) => {
 
   return (
     <motion.div 
-      whileHover={{ y: -5 }}
+      whileHover={{ y: -8 }}
+      className="hotel-card-wrapper"
       style={{ 
         backgroundColor: 'white', 
-        borderRadius: '16px', 
+        borderRadius: '24px', 
         overflow: 'hidden', 
-        boxShadow: 'var(--shadow)',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
         height: '100%',
-        position: 'relative'
+        position: 'relative',
+        border: '1px solid #f1f3f0'
       }}
     >
-      <div style={{ position: 'relative', height: '200px' }}>
-        <img 
+      <div className="hotel-card-image-box" style={{ position: 'relative', height: '220px', overflow: 'hidden' }}>
+        <motion.img 
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.6 }}
           src={hotel.images?.[0] || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=800'} 
           alt={hotel.name} 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -60,60 +64,72 @@ const HotelCard = ({ hotel }) => {
         <button
           onClick={handleWishlistToggle}
           disabled={isWishlisting}
+          className="wishlist-btn"
           style={{
             position: 'absolute',
-            top: '12px',
-            left: '12px',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            top: '15px',
+            left: '15px',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
             border: 'none',
-            borderRadius: '50%',
-            width: '36px',
-            height: '36px',
+            borderRadius: '12px',
+            width: '40px',
+            height: '40px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            transition: 'all 0.2s',
-            zIndex: 10
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            zIndex: 10,
+            boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'white'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'}
         >
           <Heart 
             size={20} 
-            color={isWishlisted ? "#ef4444" : "#64748b"} 
+            color={isWishlisted ? "#ef4444" : "#2c332b"} 
             fill={isWishlisted ? "#ef4444" : "transparent"} 
           />
         </button>
 
-        <div style={{ 
+        <div className="card-rating-badge" style={{ 
           position: 'absolute', 
-          top: '12px', 
-          right: '12px', 
+          top: '15px', 
+          right: '15px', 
           backgroundColor: 'white', 
-          padding: '4px 8px', 
-          borderRadius: '8px',
+          padding: '6px 12px', 
+          borderRadius: '12px',
           display: 'flex',
           alignItems: 'center',
-          gap: '4px',
-          fontWeight: 600,
-          fontSize: '0.875rem'
+          gap: '5px',
+          fontWeight: 800,
+          fontSize: '0.85rem',
+          boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+          color: 'var(--secondary)'
         }}>
           <Star size={14} color="#f59e0b" fill="#f59e0b" />
           {hotel.rating || 'N/A'}
         </div>
       </div>
-      <div style={{ padding: '1.5rem' }}>
-        <h3 style={{ marginBottom: '0.5rem' }}>{hotel.name}</h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-light)', fontSize: '0.875rem', marginBottom: '1rem' }}>
-          <MapPin size={14} />
+      <div style={{ padding: '1.75rem' }}>
+        <h3 style={{ marginBottom: '0.5rem', fontSize: '1.25rem', fontWeight: 800, color: 'var(--secondary)' }}>{hotel.name}</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 500 }}>
+          <MapPin size={16} color="var(--primary)" />
           {hotel.location}
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-          <span style={{ fontWeight: 700, fontSize: '1.125rem' }}>Starting ₹{hotel.minPrice || 3500}/night</span>
-          <Link to={`/hotels/${hotel._id}`} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.875rem' }}>View Details</Link>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', gap: '10px', flexWrap: 'wrap' }}>
+          <div>
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Starting from</p>
+            <span style={{ fontWeight: 900, fontSize: '1.3rem', color: 'var(--secondary)' }}>₹{hotel.minPrice || 3500}</span>
+            <span style={{ color: 'var(--text-light)', fontSize: '0.85rem', fontWeight: 600 }}>/night</span>
+          </div>
+          <Link to={`/hotels/${hotel._id}`} className="btn-primary" style={{ padding: '10px 20px', fontSize: '0.85rem', borderRadius: '12px', textTransform: 'none' }}>View Details</Link>
         </div>
       </div>
+      <style>{`
+        @media (max-width: 480px) {
+          .hotel-card-image-box { height: 180px !important; }
+          .hotel-card-wrapper h3 { font-size: 1.1rem !important; }
+        }
+      `}</style>
     </motion.div>
   );
 };

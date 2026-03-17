@@ -7,10 +7,10 @@ const BookingForm = ({ formData, setFormData }) => {
   };
 
   return (
-    <div className="glass-morphism" style={{ padding: '2.5rem', borderRadius: '32px' }}>
-      <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '2rem', color: 'var(--secondary)' }}>Booking Details</h2>
+    <div className="booking-form-box glass-morphism" style={{ padding: '2.5rem', borderRadius: '32px' }}>
+      <h2 className="booking-form-title" style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '2rem', color: 'var(--secondary)' }}>Booking Details</h2>
       
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+      <div className="booking-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
         <div>
           <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-light)' }}>
             Check-in Date
@@ -22,7 +22,7 @@ const BookingForm = ({ formData, setFormData }) => {
               name="checkIn"
               value={formData.checkIn}
               onChange={handleChange}
-              style={{ paddingLeft: '45px' }}
+              style={{ paddingLeft: '45px', height: '52px' }}
               min={new Date().toISOString().split('T')[0]}
             />
           </div>
@@ -39,7 +39,7 @@ const BookingForm = ({ formData, setFormData }) => {
               name="checkOut"
               value={formData.checkOut}
               onChange={handleChange}
-              style={{ paddingLeft: '45px' }}
+              style={{ paddingLeft: '45px', height: '52px' }}
               min={formData.checkIn || new Date().toISOString().split('T')[0]}
             />
           </div>
@@ -56,7 +56,7 @@ const BookingForm = ({ formData, setFormData }) => {
             name="guests" 
             value={formData.guests} 
             onChange={handleChange}
-            style={{ paddingLeft: '45px' }}
+            style={{ paddingLeft: '45px', height: '52px' }}
           >
             {[1, 2, 3, 4, 5, 6].map(num => (
               <option key={num} value={num}>{num} {num === 1 ? 'Guest' : 'Guests'}</option>
@@ -64,6 +64,14 @@ const BookingForm = ({ formData, setFormData }) => {
           </select>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .booking-form-box { padding: 1.5rem !important; border-radius: 20px !important; }
+          .booking-form-title { font-size: 1.4rem !important; margin-bottom: 1.5rem !important; }
+          .booking-form-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+        }
+      `}</style>
     </div>
   );
 };

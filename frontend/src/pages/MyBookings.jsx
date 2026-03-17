@@ -75,11 +75,11 @@ const MyBookings = () => {
 
   return (
     <div className="container" style={{ padding: '4rem 0' }}>
-      <div className="flex-responsive" style={{ gap: '4rem', alignItems: 'start' }}>
+      <div className="dashboard-grid" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '2.5rem', alignItems: 'start' }}>
         
         <DashboardSidebar activeTab="bookings" setActiveTab={(tab) => window.location.href = tab === 'dashboard' ? '/dashboard' : `/${tab}`} />
 
-        <main>
+        <main style={{ minWidth: 0 }}>
           <div className="my-bookings-header" style={{ marginBottom: '3rem', borderBottom: '2px solid #f3f4f6', paddingBottom: '2rem' }}>
             <h1 className="responsive-title" style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '-1px' }}>
               My Bookings
@@ -259,11 +259,22 @@ const MyBookings = () => {
       <style>{`
         @media (max-width: 992px) {
           .responsive-title { font-size: 2rem !important; }
+          .dashboard-grid {
+            grid-template-columns: 1fr !important;
+            gap: 2rem !important;
+          }
         }
         @media (max-width: 768px) {
           .booking-card-responsive {
             padding: 1.5rem !important;
             border-radius: 24px !important;
+          }
+          .booking-info-flex {
+            flex-direction: column !important;
+            gap: 1rem !important;
+          }
+          .booking-header {
+            flex-direction: column !important;
           }
           .booking-hotel-img {
             width: 100% !important;
@@ -283,6 +294,16 @@ const MyBookings = () => {
           }
           .booking-actions-responsive {
             padding-top: 1.5rem !important;
+            flex-wrap: wrap !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .booking-actions-responsive {
+            flex-direction: column !important;
+          }
+          .booking-actions-responsive > * {
+            width: 100% !important;
+            min-width: unset !important;
           }
         }
       `}</style>

@@ -41,27 +41,29 @@ const HotelListItem = ({ hotel }) => {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      whileHover={{ scale: 1.01 }}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ boxShadow: '0 12px 35px rgba(0,0,0,0.08)' }}
       className="hotel-list-item-card"
-      style={{ 
-        backgroundColor: 'white', 
-        borderRadius: '24px', 
-        overflow: 'hidden', 
+      style={{
+        backgroundColor: 'white',
+        borderRadius: '24px',
+        overflow: 'hidden',
         boxShadow: 'var(--shadow)',
-        marginBottom: '2rem',
+        marginBottom: '1.5rem',
         border: '1px solid #f3f4f6',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+        display: 'flex',
+        flexDirection: 'row',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
       {/* Image Section */}
-      <div className="hotel-list-item-image" style={{ 
-        width: '350px', 
-        height: '280px', 
+      <div className="hotel-list-item-image" style={{
+        width: '320px',
+        minHeight: '240px',
         position: 'relative',
-        flexShrink: 0
+        flexShrink: 0,
       }}>
         <img 
           src={hotel.images?.[0] || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=800'} 
@@ -135,3 +137,29 @@ const HotelListItem = ({ hotel }) => {
 };
 
 export default HotelListItem;
+
+// Inject responsive styles for this component
+const styleTag = typeof document !== 'undefined' && (() => {
+  if (document.getElementById('hotel-list-item-styles')) return;
+  const s = document.createElement('style');
+  s.id = 'hotel-list-item-styles';
+  s.textContent = `
+    @media (max-width: 768px) {
+      .hotel-list-item-card {
+        flex-direction: column !important;
+      }
+      .hotel-list-item-image {
+        width: 100% !important;
+        min-height: 220px !important;
+        max-height: 240px;
+      }
+      .hotel-list-item-details {
+        padding: 1.25rem !important;
+      }
+      .hotel-list-item-details h3 {
+        font-size: 1.2rem !important;
+      }
+    }
+  `;
+  document.head.appendChild(s);
+})();

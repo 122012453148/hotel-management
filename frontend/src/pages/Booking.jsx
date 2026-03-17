@@ -119,18 +119,18 @@ const Booking = () => {
         <main>
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
             <div style={{ display: 'flex', gap: '2rem', marginBottom: '4rem', alignItems: 'center', flexWrap: 'wrap' }} className="hotel-brief-header">
-              <div style={{ width: '200px', height: '140px', borderRadius: '24px', overflow: 'hidden', flexShrink: 0 }}>
+              <div className="hotel-brief-image" style={{ width: '280px', height: '180px', borderRadius: '24px', overflow: 'hidden', flexShrink: 0, boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
                 <img src={hotel.images?.[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={hotel.name} />
               </div>
-              <div>
+              <div className="hotel-brief-info">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)', marginBottom: '0.5rem' }}>
                    <Star size={16} fill="var(--primary)" />
                    <span style={{ fontWeight: 800 }}>{hotel.rating}</span>
                 </div>
-                <div style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                <div style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
                    Selected Hotel :
                 </div>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.5rem' }}>{hotel.name}</h1>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.6rem', lineHeight: 1.2 }}>{hotel.name}</h1>
                 <p style={{ color: 'var(--text-light)', fontSize: '1.1rem' }}>Selected Room: <span style={{ fontWeight: 700, color: 'var(--secondary)' }}>{room?.roomType}</span></p>
               </div>
             </div>
@@ -188,12 +188,19 @@ const Booking = () => {
         }
         @media (max-width: 768px) {
           .hotel-brief-header {
+            flex-direction: column !important;
             gap: 1.5rem !important;
             margin-bottom: 2.5rem !important;
+            text-align: center;
           }
-          .hotel-brief-header img { width: 100% !important; }
-          .hotel-brief-header > div:first-child { width: 100% !important; height: 180px !important; }
-          h1 { font-size: 1.75rem !important; }
+          .hotel-brief-image { 
+            width: 100% !important; 
+            height: 200px !important; 
+            border-radius: 20px !important;
+          }
+          .hotel-brief-info { width: 100% !important; }
+          .hotel-brief-info h1 { font-size: 1.75rem !important; margin-bottom: 0.5rem !important; }
+          .hotel-brief-info p { font-size: 1rem !important; }
         }
       `}</style>
     </div>

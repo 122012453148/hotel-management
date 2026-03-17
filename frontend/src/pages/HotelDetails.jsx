@@ -165,28 +165,34 @@ const HotelDetails = () => {
         @media (max-width: 1024px) {
            .details-layout {
               grid-template-columns: 1fr !important;
-              gap: 3rem !important;
+              gap: 2.5rem !important;
            }
            .hotel-title {
               font-size: 3rem !important;
            }
+           /* Move sidebar to the top on tablet so it's easy to access */
+           .details-sidebar {
+             order: -1;
+           }
         }
         @media (max-width: 768px) {
-           .container { padding: 2rem 0 !important; }
+           .container { padding: 1rem 0 !important; }
            .property-nav {
-              padding: 1rem 1.5rem !important;
-              gap: 1.5rem !important;
-              top: 70px !important;
-              margin-bottom: 2rem !important;
+              padding: 0.75rem 1rem !important;
+              gap: 1.25rem !important;
+              top: 60px !important;
+              margin-bottom: 1.5rem !important;
+              border-radius: 60px !important;
+              font-size: 0.8rem !important;
            }
            .hotel-title {
-              font-size: 2.25rem !important;
+              font-size: 2rem !important;
               letter-spacing: -1px !important;
            }
            .details-header {
               flex-direction: column !important;
               align-items: flex-start !important;
-              margin-bottom: 2rem !important;
+              margin-bottom: 1.5rem !important;
               gap: 1rem !important;
            }
            .header-actions {
@@ -196,18 +202,25 @@ const HotelDetails = () => {
            .btn-wishlist, .verified-badge {
               flex: 1;
               justify-content: center;
-              padding: 12px 10px !important;
-              font-size: 0.9rem;
+              padding: 10px 8px !important;
+              font-size: 0.85rem;
            }
            .map-container {
-              height: 300px !important;
+              height: 250px !important;
            }
            section h2 {
-              font-size: 1.75rem !important;
+              font-size: 1.5rem !important;
            }
            .details-sidebar .glass-morphism {
               padding: 1.5rem !important;
               border-radius: 24px !important;
+           }
+           .details-sidebar {
+              position: static !important;
+              order: -1;
+           }
+           .details-sidebar > div {
+              position: static !important;
            }
         }
       `}</style>
