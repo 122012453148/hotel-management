@@ -1,0 +1,7 @@
+/* App.css cleared to prevent centering issues */
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}

@@ -1,0 +1,71 @@
+import React from 'react';
+import { Calendar, Users } from 'lucide-react';
+
+const BookingForm = ({ formData, setFormData }) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  return (
+    <div className="glass-morphism" style={{ padding: '2.5rem', borderRadius: '32px' }}>
+      <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '2rem', color: 'var(--secondary)' }}>Booking Details</h2>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+        <div>
+          <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-light)' }}>
+            Check-in Date
+          </label>
+          <div style={{ position: 'relative' }}>
+            <Calendar size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
+            <input 
+              type="date" 
+              name="checkIn"
+              value={formData.checkIn}
+              onChange={handleChange}
+              style={{ paddingLeft: '45px' }}
+              min={new Date().toISOString().split('T')[0]}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-light)' }}>
+            Check-out Date
+          </label>
+          <div style={{ position: 'relative' }}>
+            <Calendar size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
+            <input 
+              type="date" 
+              name="checkOut"
+              value={formData.checkOut}
+              onChange={handleChange}
+              style={{ paddingLeft: '45px' }}
+              min={formData.checkIn || new Date().toISOString().split('T')[0]}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-light)' }}>
+          Number of Guests
+        </label>
+        <div style={{ position: 'relative' }}>
+          <Users size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)' }} />
+          <select 
+            name="guests" 
+            value={formData.guests} 
+            onChange={handleChange}
+            style={{ paddingLeft: '45px' }}
+          >
+            {[1, 2, 3, 4, 5, 6].map(num => (
+              <option key={num} value={num}>{num} {num === 1 ? 'Guest' : 'Guests'}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BookingForm;
