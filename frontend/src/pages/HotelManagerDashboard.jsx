@@ -395,7 +395,7 @@ const HotelManagerDashboard = () => {
 
   const renderDashboard = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', marginTop: '32px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
         {stats.map((stat, i) => (
           <motion.div
             key={i}
@@ -419,7 +419,7 @@ const HotelManagerDashboard = () => {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
         <div className="glass-morphism" style={{ padding: '32px', borderRadius: '24px' }}>
           <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '24px', color: 'var(--secondary)' }}>Recent Activity</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -469,7 +469,7 @@ const HotelManagerDashboard = () => {
   const renderHotelCard = (hotel) => (
     <motion.div
       key={hotel._id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-      className="glass-morphism"
+      className="glass-morphism hotel-manage-card"
       style={{ padding: '24px', borderRadius: '28px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderLeft: hotel.isApproved ? '6px solid #10b981' : '6px solid #f59e0b', transition: 'all 0.2s ease', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
     >
       <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
@@ -486,7 +486,7 @@ const HotelManagerDashboard = () => {
           </div>
         </div>
       </div>
-      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      <div className="hotel-card-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
         {hotel.isApproved ? (
           <button className="btn-primary" onClick={() => handleSelectHotel(hotel)} style={{ padding: '12px 24px', borderRadius: '14px', fontSize: '14px', fontWeight: 700, margin: 0 }}>Manage Rooms</button>
         ) : (
@@ -514,11 +514,11 @@ const HotelManagerDashboard = () => {
       <div style={{ position: 'absolute', top: '20%', left: '10%', width: '100%', height: '100%', opacity: 0.03, pointerEvents: 'none', backgroundImage: 'radial-gradient(#AEB784 1px, transparent 1px)', backgroundSize: '30px 30px', zIndex: 0 }}></div>
 
       <div className="container" style={{ padding: '40px 0', position: 'relative', zIndex: 1 }}>
-        <div className="manager-dashboard-grid" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="manager-dashboard-grid">
           <ManagerSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
         <main style={{ textAlign: 'left', minWidth: 0 }}>
-          <div style={{ 
+          <div className="manager-header-flex" style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center', 
@@ -527,9 +527,11 @@ const HotelManagerDashboard = () => {
             padding: '1.5rem 2rem',
             borderRadius: '24px',
             boxShadow: '0 4px 15px rgba(0,0,0,0.02)',
-            border: '1px solid #f1f5f9'
+            border: '1px solid #f1f5f9',
+            flexWrap: 'wrap',
+            gap: '1.5rem'
           }}>
-            <div>
+            <div style={{ minWidth: '200px' }}>
               <h1 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--secondary)', letterSpacing: '-0.5px', marginBottom: '4px', lineHeight: 1.1 }}>
                 {activeTab === 'dashboard' ? 'Portfolio Overview' :
                  activeTab === 'hotels' ? 'My Properties' :
@@ -546,9 +548,9 @@ const HotelManagerDashboard = () => {
                 </button>
               )}
             </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingRight: '2rem', borderRight: '1px solid #e2e8f0' }}>
+ 
+            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingRight: '2rem', borderRight: '1px solid #e2e8f0' }} className="hide-mobile">
                 <NotificationPanel />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -589,7 +591,7 @@ const HotelManagerDashboard = () => {
                 {activeTab === 'addHotel' && (
                   <motion.div key="add" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-morphism" style={{ padding: '3.5rem', borderRadius: '40px' }}>
                     <form onSubmit={handleAddHotel} style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                      <div className="manager-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
                          <div>
                            <label>Hotel Name</label>
                            <input type="text" placeholder="Enter hotel name" value={hotelFormData.name} onChange={e => setHotelFormData({...hotelFormData, name: e.target.value})} required />
@@ -616,7 +618,7 @@ const HotelManagerDashboard = () => {
                          </div>
                        </div>
 
-                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                       <div className="manager-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
                          <div>
                            <label>Zip Code / Pincode</label>
                            <input type="number" placeholder="Enter zip or postal code" value={hotelFormData.zipCode} onChange={e => setHotelFormData({...hotelFormData, zipCode: e.target.value})} required />
@@ -815,7 +817,7 @@ const HotelManagerDashboard = () => {
                     {!analyticsData ? (
                         <div style={{ textAlign: 'center', padding: '5rem 0' }}><Loader2 className="spin" size={48} color="var(--primary)" /></div>
                     ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                       <div className="glass-morphism" style={{ padding: '2.5rem', borderRadius: '32px' }}>
                         <h3 style={{ marginBottom: '2rem', fontSize: '1.25rem', fontWeight: 800 }}>Revenue Trends (Last 6 Months)</h3>
                         <div style={{ height: '300px' }}>
@@ -891,8 +893,8 @@ const HotelManagerDashboard = () => {
                       </button>
                     </div>
                     {bookings.length === 0 ? <p>No guest bookings yet.</p> : (
-                      <div className="glass-morphism" style={{ borderRadius: '32px', overflow: 'hidden' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <div className="glass-morphism table-container" style={{ borderRadius: '32px' }}>
+                        <table style={{ minWidth: '800px', width: '100%', borderCollapse: 'collapse' }}>
                           <thead>
                             <tr style={{ backgroundColor: '#f9fafb', textAlign: 'left' }}>
                               <th style={{ padding: '1.5rem' }}>GUEST</th>
@@ -1338,23 +1340,58 @@ const HotelManagerDashboard = () => {
           .amenities-checkbox-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        .image-upload-box {
-          width: 100px;
-          height: 75px;
-          border-radius: 12px;
-          border: 2px dashed #e2e8f0;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.2s;
-          margin: 0;
+        .manager-dashboard-grid {
+          display: grid;
+          grid-template-columns: 280px 1fr;
+          gap: 2.5rem;
+          align-items: start;
         }
 
-        .image-upload-box:hover {
-          border-color: var(--primary);
-          background: #fcfcfc;
+        .table-container {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 1200px) {
+          .manager-dashboard-grid { grid-template-columns: 1fr !important; }
+        }
+
+        @media (max-width: 768px) {
+          .container { padding: 20px !important; }
+          .manager-header-flex {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 1.5rem !important;
+            gap: 1rem !important;
+          }
+          .manager-header-flex > div:last-child {
+            width: 100%;
+            justify-content: flex-start;
+          }
+          .manager-header-flex .hide-mobile {
+            display: none !important;
+          }
+          .hotel-manage-card {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 1.5rem !important;
+          }
+          .hotel-manage-card > div:first-child {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            width: 100%;
+          }
+          .hotel-manage-card img {
+            width: 100% !important;
+            height: 180px !important;
+          }
+          .hotel-card-actions {
+            width: 100%;
+            justify-content: space-between;
+          }
+          .hotel-card-actions button:first-child {
+            flex: 1;
+          }
         }
       `}</style>
       {activeChat && <ChatWindow booking={activeChat} onClose={() => setActiveChat(null)} />}

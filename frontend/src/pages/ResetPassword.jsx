@@ -36,7 +36,8 @@ const ResetPassword = () => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        style={{ width: '100%', maxWidth: '450px', padding: '3rem', borderRadius: '32px', backgroundColor: 'white', boxShadow: 'var(--shadow-xl)' }}
+        className="auth-card"
+        style={{ width: '100%', maxWidth: '450px' }}
       >
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <div style={{ width: '64px', height: '64px', borderRadius: '20px', backgroundColor: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: 'var(--primary)' }}>

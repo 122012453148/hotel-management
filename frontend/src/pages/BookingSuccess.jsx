@@ -52,7 +52,7 @@ const BookingSuccess = () => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-morphism"
+        className="glass-morphism success-card"
         style={{ padding: '4rem', borderRadius: '48px', textAlign: 'center', border: '1px solid rgba(16, 185, 129, 0.2)' }}
       >
         <div style={{ 
@@ -64,10 +64,10 @@ const BookingSuccess = () => {
           <Check size={50} color="white" strokeWidth={3} />
         </div>
 
-        <h1 style={{ fontSize: '3.5rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '1rem', letterSpacing: '-2px' }}>
+        <h1 className="success-title" style={{ fontSize: '3.5rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '1rem', letterSpacing: '-2px' }}>
           {booking.status === 'Pending' ? 'PAYMENT SUCCESSFUL' : 'BOOKING SUCCESSFUL'}
         </h1>
-        <p style={{ color: 'var(--text-light)', fontSize: '1.25rem', marginBottom: '4rem' }}>
+        <p className="success-subtitle" style={{ color: 'var(--text-light)', fontSize: '1.25rem', marginBottom: '4rem' }}>
           {booking.status === 'Pending' 
             ? "Your payment is complete! Your booking is currently pending final approval from the hotel manager." 
             : "Your luxury escape is all set. We've sent the confirmation to your email."}
@@ -76,8 +76,8 @@ const BookingSuccess = () => {
         <div style={{ 
           backgroundColor: '#f9fafb', padding: '3rem', borderRadius: '32px', 
           textAlign: 'left', marginBottom: '4rem', border: '1px solid #f3f4f6' 
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+        }} className="success-details">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
             <div>
               <p style={{ color: '#9ca3af', fontWeight: 600, fontSize: '0.9rem', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Booking ID</p>
               <p style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--secondary)' }}>#{booking._id.slice(-6).toUpperCase()}</p>
@@ -159,6 +159,18 @@ const BookingSuccess = () => {
           </div>
         </div>
       </motion.div>
+      <style>{`
+        @media (max-width: 768px) {
+          .success-card { padding: 2rem 1.5rem !important; border-radius: 32px !important; }
+          .success-title { font-size: 2rem !important; letter-spacing: -1px !important; }
+          .success-subtitle { font-size: 1rem !important; margin-bottom: 2.5rem !important; }
+          .success-details { padding: 1.5rem !important; border-radius: 24px !important; }
+          .success-details p:last-child { font-size: 1rem !important; }
+          .success-details div[style*="display: grid"] { gap: 1.5rem !important; }
+          .success-card .btn-primary { font-size: 1.1rem !important; padding: 1.25rem !important; }
+          .success-card div[style*="display: flex"] { flex-direction: column !important; }
+        }
+      `}</style>
     </div>
   );
 };

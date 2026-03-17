@@ -134,6 +134,7 @@ const NotificationPanel = () => {
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            className="notifications-dropdown"
             style={{ 
               position: 'absolute', top: '100%', right: 0, 
               marginTop: '1rem', width: '350px', 
@@ -203,6 +204,19 @@ const NotificationPanel = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <style>{`
+        @media (max-width: 768px) {
+          .notifications-dropdown {
+            position: fixed !important;
+            top: 70px !important;
+            left: 10px !important;
+            right: 10px !important;
+            width: calc(100% - 20px) !important;
+            max-height: 80vh !important;
+            margin-top: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

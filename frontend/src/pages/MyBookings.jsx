@@ -75,13 +75,13 @@ const MyBookings = () => {
 
   return (
     <div className="container" style={{ padding: '4rem 0' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '4rem', alignItems: 'start' }}>
+      <div className="flex-responsive" style={{ gap: '4rem', alignItems: 'start' }}>
         
         <DashboardSidebar activeTab="bookings" setActiveTab={(tab) => window.location.href = tab === 'dashboard' ? '/dashboard' : `/${tab}`} />
 
         <main>
-          <div style={{ marginBottom: '3rem', borderBottom: '2px solid #f3f4f6', paddingBottom: '2rem' }}>
-            <h1 style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '-1px' }}>
+          <div className="my-bookings-header" style={{ marginBottom: '3rem', borderBottom: '2px solid #f3f4f6', paddingBottom: '2rem' }}>
+            <h1 className="responsive-title" style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '-1px' }}>
               My Bookings
             </h1>
             <p style={{ color: 'var(--text-light)', fontSize: '1.1rem' }}>Review and manage your past and upcoming luxury stays.</p>
@@ -104,12 +104,12 @@ const MyBookings = () => {
                     key={booking._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-morphism"
+                    className="glass-morphism booking-card-responsive"
                     style={{ padding: '3rem', borderRadius: '40px', border: '1px solid #f3f4f6' }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '2.5rem' }}>
-                      <div style={{ display: 'flex', gap: '2rem' }}>
-                        <div style={{ width: '150px', height: '120px', borderRadius: '24px', overflow: 'hidden', flexShrink: 0 }}>
+                    <div className="booking-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '2.5rem', gap: '2rem', flexWrap: 'wrap' }}>
+                      <div className="booking-info-flex" style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+                        <div className="booking-hotel-img" style={{ width: '150px', height: '120px', borderRadius: '24px', overflow: 'hidden', flexShrink: 0 }}>
                           <img 
                             src={booking.hotel?.images?.[0] || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=400'} 
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
@@ -120,9 +120,9 @@ const MyBookings = () => {
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.85rem', marginBottom: '0.5rem', letterSpacing: '1px' }}>
                              Hotel :
                           </div>
-                          <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '1rem' }}>{booking.hotel?.name}</h2>
+                          <h2 className="hotel-name-responsive" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '1rem' }}>{booking.hotel?.name}</h2>
                           
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem' }}>
+                          <div className="booking-dates-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '2rem' }}>
                             <div>
                                <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', fontWeight: 600, marginBottom: '0.4rem' }}>Check-in :</p>
                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
@@ -141,87 +141,90 @@ const MyBookings = () => {
                         </div>
                       </div>
 
-                      <div style={{ textAlign: 'right' }}>
+                      <div className="status-actions-responsive" style={{ textAlign: 'right' }}>
                         <div style={{ 
                           display: 'inline-flex', alignItems: 'center', gap: '8px', 
                           padding: '10px 20px', borderRadius: '14px', 
                           backgroundColor: style.bg, color: style.color, 
-                          fontWeight: 800, fontSize: '0.9rem', marginBottom: '1.5rem'
+                          fontWeight: 800, fontSize: '0.85rem', marginBottom: '1rem'
                         }}>
-                          {style.icon} Status : {booking.status}
+                          {style.icon} {booking.status}
                         </div>
-                        <p style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--secondary)' }}>₹{booking.totalPrice}</p>
+                        <p className="price-responsive" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--secondary)' }}>₹{booking.totalPrice}</p>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '1.5rem', borderTop: '1px solid #f3f4f6', paddingTop: '2.5rem' }}>
+                    <div className="booking-actions-responsive" style={{ display: 'flex', gap: '1rem', borderTop: '1px solid #f3f4f6', paddingTop: '2rem', flexWrap: 'wrap' }}>
                       <Link 
                         to={`/hotels/${booking.hotel?._id}`} 
                         className="btn-primary"
-                        style={{ flex: 1, padding: '1.25rem', borderRadius: '18px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', fontWeight: 700 }}
+                        style={{ flex: 1, padding: '1rem', borderRadius: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', fontWeight: 700, minWidth: '150px' }}
                       >
-                        View Details <ChevronRight size={18} />
+                        View Details <ChevronRight size={16} />
                       </Link>
                       
                       {booking.status === 'Confirmed' && (
                         <button 
                           onClick={() => handleCancel(booking._id)}
                           style={{ 
-                            flex: 1, padding: '1.25rem', borderRadius: '18px', 
+                            flex: 1, padding: '1rem', borderRadius: '14px', 
                             backgroundColor: 'white', border: '2px solid var(--error)', 
-                            color: 'var(--error)', fontWeight: 700 
+                            color: 'var(--error)', fontWeight: 700, minWidth: '150px'
                           }}
                         >
-                          Cancel Booking
+                          Cancel
                         </button>
                       )}
 
                       <button 
                         onClick={() => setActiveChat(booking)}
+                        className="btn-chat-responsive"
                         style={{ 
-                          padding: '0 2rem', borderRadius: '18px', 
+                          flex: 1, minWidth: '150px', padding: '1rem', borderRadius: '14px', 
                           backgroundColor: '#f1f5f9', display: 'flex', 
                           justifyContent: 'center', alignItems: 'center', color: 'var(--primary)',
-                          cursor: 'pointer', border: 'none', gap: '10px', fontWeight: 700, fontSize: '0.9rem'
+                          cursor: 'pointer', border: 'none', gap: '8px', fontWeight: 700, fontSize: '0.9rem'
                         }}
                       >
-                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
-                         Chat with Manager
+                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+                         Chat
                       </button>
 
-                      <button 
-                        onClick={() => handleDownloadInvoice(booking._id)}
-                        title="Download Invoice"
-                        style={{ 
-                          width: '60px', borderRadius: '18px', 
-                          backgroundColor: booking.paymentStatus === 'Paid' ? 'var(--primary)' : '#f9fafb', 
-                          display: 'flex', 
-                          justifyContent: 'center', alignItems: 'center', 
-                          color: booking.paymentStatus === 'Paid' ? 'white' : '#9ca3af',
-                          cursor: 'pointer',
-                          border: 'none',
-                          transition: 'all 0.3s'
-                        }}
-                      >
-                        <Download size={22} />
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.75rem' }}>
+                        <button 
+                          onClick={() => handleDownloadInvoice(booking._id)}
+                          title="Download Invoice"
+                          style={{ 
+                            width: '48px', height: '48px', borderRadius: '12px', 
+                            backgroundColor: booking.paymentStatus === 'Paid' ? 'var(--primary)' : '#f9fafb', 
+                            display: 'flex', 
+                            justifyContent: 'center', alignItems: 'center', 
+                            color: booking.paymentStatus === 'Paid' ? 'white' : '#9ca3af',
+                            cursor: 'pointer',
+                            border: 'none',
+                            transition: 'all 0.3s'
+                          }}
+                        >
+                          <Download size={20} />
+                        </button>
 
-                      <button 
-                        onClick={() => setShowQR(booking)}
-                        title="Show QR Code for Check-in"
-                        style={{ 
-                          width: '60px', borderRadius: '18px', 
-                          backgroundColor: '#717D44', 
-                          display: 'flex', 
-                          justifyContent: 'center', alignItems: 'center', 
-                          color: 'white',
-                          cursor: 'pointer',
-                          border: 'none',
-                          transition: 'all 0.3s'
-                        }}
-                      >
-                        <QrCode size={22} />
-                      </button>
+                        <button 
+                          onClick={() => setShowQR(booking)}
+                          title="Show QR Code for Check-in"
+                          style={{ 
+                            width: '48px', height: '48px', borderRadius: '12px', 
+                            backgroundColor: '#717D44', 
+                            display: 'flex', 
+                            justifyContent: 'center', alignItems: 'center', 
+                            color: 'white',
+                            cursor: 'pointer',
+                            border: 'none',
+                            transition: 'all 0.3s'
+                          }}
+                        >
+                          <QrCode size={20} />
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -253,6 +256,36 @@ const MyBookings = () => {
         </div>
       )}
       {activeChat && <ChatWindow booking={activeChat} onClose={() => setActiveChat(null)} />}
+      <style>{`
+        @media (max-width: 992px) {
+          .responsive-title { font-size: 2rem !important; }
+        }
+        @media (max-width: 768px) {
+          .booking-card-responsive {
+            padding: 1.5rem !important;
+            border-radius: 24px !important;
+          }
+          .booking-hotel-img {
+            width: 100% !important;
+            height: 180px !important;
+          }
+          .hotel-name-responsive {
+            font-size: 1.5rem !important;
+          }
+          .status-actions-responsive {
+            text-align: left !important;
+            width: 100%;
+            border-top: 1px dashed #f1f5f9;
+            padding-top: 1rem;
+          }
+          .price-responsive {
+            font-size: 1.5rem !important;
+          }
+          .booking-actions-responsive {
+            padding-top: 1.5rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

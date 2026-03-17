@@ -30,7 +30,8 @@ const ForgotPassword = () => {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ width: '100%', maxWidth: '450px', padding: '3rem', borderRadius: '32px', backgroundColor: 'white', boxShadow: 'var(--shadow-xl)' }}
+        className="auth-card"
+        style={{ width: '100%', maxWidth: '450px' }}
       >
         <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-light)', marginBottom: '2rem', textDecoration: 'none', width: 'fit-content' }}>
           <ArrowLeft size={18} /> Back to Login

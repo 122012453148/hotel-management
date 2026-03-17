@@ -23,19 +23,10 @@ const AdminLogin = () => {
     setLoading(true);
     setError('');
     try {
-      // Fixed credentials check: although backend will check, we can also ensure they match the "fixed" ones
-      if (email !== 'admin@royalhotel.com' || password !== 'admin123') {
-        throw new Error('Invalid Admin Credentials');
-      }
-
-      const user = await login(email, password);
-      if (user.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        throw new Error('Unauthorized. This portal is for administrators only.');
-      }
+      await login(email, password, 'admin');
+      navigate('/admin/dashboard');
     } catch (err) {
-      setError(err.message || err.response?.data?.message || 'Login failed');
+      setError(err.response?.data?.message || err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -46,7 +37,8 @@ const AdminLogin = () => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        style={{ width: '100%', maxWidth: '400px', padding: '3rem', borderRadius: '32px', backgroundColor: 'white', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}
+        className="auth-card"
+        style={{ maxWidth: '400px' }}
       >
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <div style={{ width: '80px', height: '80px', margin: '0 auto 1.5rem', borderRadius: '50%', overflow: 'hidden', border: '3px solid #eff6ff', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }}>

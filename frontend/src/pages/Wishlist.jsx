@@ -36,10 +36,10 @@ const Wishlist = () => {
 
   return (
     <div style={{ padding: '2rem 1rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <header style={{ marginBottom: '2rem' }}>
+      <header className="wishlist-header" style={{ marginBottom: '2rem' }}>
         <h1 style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Heart fill="#ef4444" color="#ef4444" size={32} />
-          My Wishlist
+          <span>My Wishlist</span>
         </h1>
         <p style={{ color: 'var(--text-light)' }}>
           {wishlist.length} {wishlist.length === 1 ? 'hotel' : 'hotels'} saved for your next trip
@@ -60,6 +60,7 @@ const Wishlist = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          className="wishlist-empty-card"
           style={{ 
             textAlign: 'center', 
             padding: '4rem 2rem', 
@@ -89,6 +90,20 @@ const Wishlist = () => {
           </a>
         </motion.div>
       )}
+      <style>{`
+        @media (max-width: 768px) {
+          .wishlist-header h1 {
+            font-size: 1.75rem !important;
+          }
+          .wishlist-header h1 svg {
+            width: 28px !important;
+            height: 28px !important;
+          }
+          .wishlist-empty-card {
+            padding: 2rem 1.5rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

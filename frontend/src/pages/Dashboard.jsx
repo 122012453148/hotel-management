@@ -131,7 +131,7 @@ const Dashboard = () => {
         key={booking._id} 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="fade-in"
+        className="fade-in booking-card-responsive"
         style={{ 
           backgroundColor: 'white', 
           padding: '2rem', 
@@ -141,10 +141,12 @@ const Dashboard = () => {
           alignItems: 'center', 
           boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
           border: '1px solid #f1f5f9',
-          marginBottom: '1.5rem'
+          marginBottom: '1.5rem',
+          flexWrap: 'wrap',
+          gap: '1.5rem'
         }}
       >
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ width: '120px', height: '90px', borderRadius: '20px', overflow: 'hidden', flexShrink: 0 }}>
             <img 
               src={booking.hotel?.images?.[0] || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=400'} 
@@ -154,14 +156,14 @@ const Dashboard = () => {
           </div>
           <div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--secondary)' }}>{booking.hotel?.name}</h3>
-            <div style={{ display: 'flex', gap: '1.25rem', color: 'var(--text-light)', fontSize: '0.9rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)', fontSize: '0.9rem', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Calendar size={16} /> {new Date(booking.checkIn).toLocaleDateString()}</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><MapPin size={16} /> {booking.hotel?.location}</span>
             </div>
           </div>
         </div>
 
-        <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '3rem' }}>
+        <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%' }} className="booking-card-footer">
           <div>
             <p style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.3rem' }}>₹{booking.totalPrice}</p>
             <span style={{ 
@@ -178,49 +180,49 @@ const Dashboard = () => {
             </span>
           </div>
           
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <button 
               onClick={() => setActiveChat(booking)}
               style={{ 
-                padding: '0.75rem 1.5rem', borderRadius: '15px', 
+                padding: '0.75rem 1.25rem', borderRadius: '15px', 
                 backgroundColor: '#f1f5f9', display: 'flex', 
                 justifyContent: 'center', alignItems: 'center', color: 'var(--primary)',
-                cursor: 'pointer', border: 'none', gap: '10px', fontWeight: 700, fontSize: '0.9rem'
+                cursor: 'pointer', border: 'none', gap: '10px', fontWeight: 700, fontSize: '0.85rem'
               }}
             >
-               <MessageSquare size={18} /> Chat with Manager
+               <MessageSquare size={18} /> <span className="hide-mobile">Chat</span>
             </button>
             
             <button 
               onClick={() => handleDownloadInvoice(booking._id)}
               disabled={booking.paymentStatus !== 'Paid'}
               style={{ 
-                padding: '0.75rem 1.5rem', borderRadius: '15px', 
+                padding: '0.75rem 1.25rem', borderRadius: '15px', 
                 backgroundColor: booking.paymentStatus === 'Paid' ? 'var(--primary)' : '#f8fafc', 
                 display: 'flex', justifyContent: 'center', alignItems: 'center', 
                 color: booking.paymentStatus === 'Paid' ? 'white' : '#cbd5e1',
                 cursor: booking.paymentStatus === 'Paid' ? 'pointer' : 'not-allowed', 
-                border: 'none', gap: '10px', fontWeight: 700, fontSize: '0.9rem'
+                border: 'none', gap: '10px', fontWeight: 700, fontSize: '0.85rem'
               }}
             >
-              <Download size={18} /> Invoice
+              <Download size={18} /> <span className="hide-mobile">Invoice</span>
             </button>
-
+ 
             {booking.status === 'Confirmed' && (
               <button 
                 onClick={() => setShowQR(booking)}
                 title="Show QR Code for Check-in"
                 style={{ 
-                  padding: '0.75rem 1.5rem', borderRadius: '15px', 
+                  padding: '0.75rem 1.25rem', borderRadius: '15px', 
                   backgroundColor: '#10b981', display: 'flex', 
                   justifyContent: 'center', alignItems: 'center', color: 'white',
-                  cursor: 'pointer', border: 'none', gap: '10px', fontWeight: 700, fontSize: '0.9rem'
+                  cursor: 'pointer', border: 'none', gap: '10px', fontWeight: 700, fontSize: '0.85rem'
                 }}
               >
-                 <QrCode size={18} /> Show QR
+                 <QrCode size={18} /> <span className="hide-mobile">QR</span>
               </button>
             )}
-
+ 
             {booking.status === 'Confirmed' && (
               <button 
                 onClick={() => handleCancel(booking._id)}
@@ -279,7 +281,7 @@ const Dashboard = () => {
                 {/* Stats Grid */}
                 <div className="stats-grid" style={{ 
                   display: 'grid', 
-                  gridTemplateColumns: 'repeat(3, 1fr)', 
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
                   gap: '1.5rem', 
                   marginBottom: '4rem' 
                 }}>
@@ -334,15 +336,15 @@ const Dashboard = () => {
                 initial={{ opacity: 0, x: 20 }} 
                 animate={{ opacity: 1, x: 0 }} 
                 exit={{ opacity: 0, x: -20 }}
-                className="glass-morphism"
+                className="glass-morphism profile-container"
                 style={{ padding: '3rem', borderRadius: '32px' }}
               >
                 <div style={{ marginBottom: '2.5rem' }}>
                   <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--secondary)' }}>Personal Details</h2>
                   <p style={{ color: 'var(--text-light)' }}>Update your information for a personalized experience.</p>
                 </div>
-
-                <form onSubmit={handleProfileUpdate} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+ 
+                <form onSubmit={handleProfileUpdate} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                   <div style={{ gridColumn: '1 / -1' }}>
                     {saveSuccess && (
                       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ backgroundColor: '#ecfdf5', color: '#059669', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', textAlign: 'center', fontWeight: 600 }}>
@@ -350,28 +352,28 @@ const Dashboard = () => {
                       </motion.div>
                     )}
                   </div>
-
+ 
                   <div>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 700, fontSize: '0.85rem', color: '#4b5563' }}>FULL NAME</label>
                     <input 
                       type="text" 
                       value={profileData.name} 
                       onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-                      style={{ borderRadius: '14px', padding: '0.75rem 1rem' }} 
+                      style={{ borderRadius: '14px', padding: '0.75rem 1rem', width: '100%' }} 
                       required 
                     />
                   </div>
-
+ 
                   <div>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 700, fontSize: '0.85rem', color: '#4b5563' }}>EMAIL (READ-ONLY)</label>
                     <input 
                       type="email" 
                       value={profileData.email} 
                       disabled 
-                      style={{ borderRadius: '14px', padding: '0.75rem 1rem', backgroundColor: '#f9fafb', color: '#9ca3af', cursor: 'not-allowed' }} 
+                      style={{ borderRadius: '14px', padding: '0.75rem 1rem', width: '100%', backgroundColor: '#f9fafb', color: '#9ca3af', cursor: 'not-allowed' }} 
                     />
                   </div>
-
+ 
                   <div>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 700, fontSize: '0.85rem', color: '#4b5563' }}>CONTACT NUMBER</label>
                     <input 
@@ -379,16 +381,16 @@ const Dashboard = () => {
                       value={profileData.phone} 
                       placeholder="+91 98765 43210"
                       onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                      style={{ borderRadius: '14px', padding: '0.75rem 1rem' }} 
+                      style={{ borderRadius: '14px', padding: '0.75rem 1rem', width: '100%' }} 
                     />
                   </div>
-
+ 
                   <div>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 700, fontSize: '0.85rem', color: '#4b5563' }}>GENDER</label>
                     <select 
                       value={profileData.gender} 
                       onChange={(e) => setProfileData({...profileData, gender: e.target.value})}
-                      style={{ borderRadius: '14px', padding: '0.75rem 1rem', backgroundColor: 'white' }}
+                      style={{ borderRadius: '14px', padding: '0.75rem 1rem', width: '100%', backgroundColor: 'white' }}
                     >
                       <option value="">Select Gender</option>
                       <option value="Male">Male</option>
@@ -396,17 +398,17 @@ const Dashboard = () => {
                       <option value="Other">Other</option>
                     </select>
                   </div>
-
+ 
                   <div style={{ gridColumn: '1 / -1' }}>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 700, fontSize: '0.85rem', color: '#4b5563' }}>STREET ADDRESS</label>
                     <textarea 
                       value={profileData.address} 
                       placeholder="Enter your full address"
                       onChange={(e) => setProfileData({...profileData, address: e.target.value})}
-                      style={{ borderRadius: '14px', padding: '0.75rem 1rem', height: '100px', resize: 'none' }} 
+                      style={{ borderRadius: '14px', padding: '0.75rem 1rem', height: '100px', width: '100%', resize: 'none' }} 
                     />
                   </div>
-
+ 
                   <div style={{ gridColumn: '1 / -1' }}>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 700, fontSize: '0.85rem', color: '#4b5563' }}>NEW PASSWORD (LEAVE BLANK TO KEEP CURRENT)</label>
                     <input 
@@ -414,10 +416,10 @@ const Dashboard = () => {
                       placeholder="••••••••"
                       value={profileData.password} 
                       onChange={(e) => setProfileData({...profileData, password: e.target.value})}
-                      style={{ borderRadius: '14px', padding: '0.75rem 1rem' }} 
+                      style={{ borderRadius: '14px', padding: '0.75rem 1rem', width: '100%' }} 
                     />
                   </div>
-
+ 
                   <div style={{ gridColumn: '1 / -1', marginTop: '1rem' }}>
                     <button type="submit" disabled={saving} className="btn-primary" style={{ padding: '1rem 3rem', borderRadius: '16px' }}>
                       {saving ? 'Saving Changes...' : 'Save Profile'}

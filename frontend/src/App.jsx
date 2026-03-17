@@ -2,6 +2,23 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
+
+// One-time migration: move old shared 'userInfo' key to role-specific key
+// so that returning users don't get stuck in the old single-key system.
+(() => {
+  try {
+    const old = localStorage.getItem('userInfo');
+    if (old) {
+      const parsed = JSON.parse(old);
+      const keyMap = { customer: 'customerInfo', manager: 'managerInfo', admin: 'adminInfo' };
+      const newKey = keyMap[parsed?.role];
+      if (newKey && !localStorage.getItem(newKey)) {
+        localStorage.setItem(newKey, old);
+      }
+      localStorage.removeItem('userInfo');
+    }
+  } catch { localStorage.removeItem('userInfo'); }
+})();
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import CustomerLogin from './pages/CustomerLogin';

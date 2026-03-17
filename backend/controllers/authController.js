@@ -77,7 +77,7 @@ exports.verifyEmail = async (req, res) => {
 // @desc Auth user & get token
 // @route POST /api/auth/login
 exports.loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
     try {
         const user = await User.findOne({ email });
@@ -85,6 +85,15 @@ exports.loginUser = async (req, res) => {
         if (user && (await user.matchPassword(password))) {
             if (user.isBlocked) {
                 return res.status(403).json({ message: 'Your account has been blocked by admin' });
+            }
+
+            // If a specific role is requested, enforce it
+            // This prevents a customer from logging into the manager portal and vice versa
+            if (role && user.role !== role) {
+                const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
+                return res.status(403).json({ 
+                    message: `This account is not registered as a ${roleLabel}. Please use the correct login portal.` 
+                });
             }
 
             res.json({

@@ -86,10 +86,11 @@ const HotelDetails = () => {
           <h1 className="hotel-title" style={{ fontSize: '4rem', fontWeight: 800, color: 'var(--secondary)', letterSpacing: '-2px', marginBottom: '0.5rem' }}>{hotel.name}</h1>
         </motion.div>
         
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <div className="header-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <button
             onClick={handleWishlistToggle}
             disabled={isWishlisting}
+            className="btn-wishlist"
             style={{
               backgroundColor: isWishlisted ? '#fef2f2' : 'white',
               border: '2px solid',
@@ -106,10 +107,10 @@ const HotelDetails = () => {
             }}
           >
             <Heart size={20} fill={isWishlisted ? '#ef4444' : 'transparent'} />
-            {isWishlisted ? 'Saved' : 'Save to Wishlist'}
+            <span>{isWishlisted ? 'Saved' : 'Save to Wishlist'}</span>
           </button>
-          <div style={{ backgroundColor: '#f0fdf4', color: '#166534', padding: '10px 20px', borderRadius: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ShieldCheck size={18} /> Safe & Verified
+          <div className="verified-badge" style={{ backgroundColor: '#f0fdf4', color: '#166534', padding: '10px 20px', borderRadius: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <ShieldCheck size={18} /> <span>Safe & Verified</span>
           </div>
         </div>
       </div>
@@ -171,10 +172,12 @@ const HotelDetails = () => {
            }
         }
         @media (max-width: 768px) {
+           .container { padding: 2rem 0 !important; }
            .property-nav {
               padding: 1rem 1.5rem !important;
               gap: 1.5rem !important;
               top: 70px !important;
+              margin-bottom: 2rem !important;
            }
            .hotel-title {
               font-size: 2.25rem !important;
@@ -184,9 +187,27 @@ const HotelDetails = () => {
               flex-direction: column !important;
               align-items: flex-start !important;
               margin-bottom: 2rem !important;
+              gap: 1rem !important;
+           }
+           .header-actions {
+              width: 100%;
+              gap: 0.75rem !important;
+           }
+           .btn-wishlist, .verified-badge {
+              flex: 1;
+              justify-content: center;
+              padding: 12px 10px !important;
+              font-size: 0.9rem;
            }
            .map-container {
               height: 300px !important;
+           }
+           section h2 {
+              font-size: 1.75rem !important;
+           }
+           .details-sidebar .glass-morphism {
+              padding: 1.5rem !important;
+              border-radius: 24px !important;
            }
         }
       `}</style>

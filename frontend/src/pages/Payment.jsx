@@ -51,7 +51,7 @@ const Payment = () => {
   return (
     <div className="container" style={{ padding: '4rem 0', maxWidth: '800px' }}>
       <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-        <h1 style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--secondary)', letterSpacing: '-1.5px' }}>PAYMENT</h1>
+        <h1 className="payment-title" style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--secondary)', letterSpacing: '-1.5px' }}>PAYMENT</h1>
         <p style={{ color: 'var(--text-light)' }}>Secure your luxury stay</p>
       </div>
 
@@ -60,7 +60,7 @@ const Payment = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-morphism" 
+          className="glass-morphism payment-card" 
           style={{ padding: '3rem', borderRadius: '40px' }}
         >
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', borderBottom: '1px solid #f3f4f6', paddingBottom: '1rem' }}>Booking Summary</h2>
@@ -92,7 +92,7 @@ const Payment = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="glass-morphism" 
+          className="glass-morphism payment-card" 
           style={{ padding: '3rem', borderRadius: '40px' }}
         >
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem' }}>Payment Method</h2>
@@ -160,6 +160,13 @@ const Payment = () => {
       <style>{`
         .spin { animation: spin 2s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @media (max-width: 768px) {
+          .payment-title { font-size: 2rem !important; }
+          .payment-card { padding: 1.5rem !important; border-radius: 24px !important; }
+          .payment-card h2 { font-size: 1.25rem !important; }
+          .payment-card span:last-child { font-size: 1.5rem !important; }
+          .payment-card .indian-rupee { width: 20px; height: 20px; }
+        }
       `}</style>
     </div>
   );

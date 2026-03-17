@@ -3,26 +3,55 @@ import api from '../services/api';
 
 const AuthContext = createContext();
 
-// Read user from localStorage SYNCHRONOUSLY before first render
-const getStoredUser = () => {
+// Each role gets its own isolated localStorage key.
+// This prevents the customer session from bleeding into the manager portal and vice versa.
+const STORAGE_KEY = {
+  customer: 'customerInfo',
+  manager:  'managerInfo',
+  admin:    'adminInfo',
+};
+
+// Helper: load a stored session for a specific role
+const getStoredUser = (role) => {
   try {
-    const userInfo = localStorage.getItem('userInfo');
-    return userInfo ? JSON.parse(userInfo) : null;
-  } catch (e) {
-    localStorage.removeItem('userInfo');
+    const key = STORAGE_KEY[role];
+    const raw = key ? localStorage.getItem(key) : null;
+    return raw ? JSON.parse(raw) : null;
+  } catch {
     return null;
   }
 };
 
+// Helper: figure out which portal we are currently in based on URL path
+// Called once synchronously before first render
+const detectRoleFromPath = () => {
+  const path = window.location.pathname;
+  if (path.startsWith('/manager')) return 'manager';
+  if (path.startsWith('/admin'))   return 'admin';
+  return 'customer';
+};
+
+// On initial load, restore the session that belongs to the current portal
+const initUser = () => {
+  const role = detectRoleFromPath();
+  return getStoredUser(role);
+};
+
 export const AuthProvider = ({ children }) => {
-  // Initialize user synchronously — no useEffect, no loading flash
-  const [user, setUser] = useState(getStoredUser);
+  const [user, setUser] = useState(initUser);
   const [loading] = useState(false);
 
-  const login = async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password });
+  // Save user to the correct role-specific key
+  const persistUser = (data) => {
+    if (!data?.role) return;
+    const key = STORAGE_KEY[data.role];
+    if (key) localStorage.setItem(key, JSON.stringify(data));
+  };
+
+  const login = async (email, password, role) => {
+    const { data } = await api.post('/auth/login', { email, password, role });
+    persistUser(data);
     setUser(data);
-    localStorage.setItem('userInfo', JSON.stringify(data));
     return data;
   };
 
@@ -31,14 +60,18 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const logout = () => {
+  const logout = (role) => {
+    // Clear only the relevant role's session
+    const targetRole = role || user?.role;
+    if (targetRole && STORAGE_KEY[targetRole]) {
+      localStorage.removeItem(STORAGE_KEY[targetRole]);
+    }
     setUser(null);
-    localStorage.removeItem('userInfo');
   };
 
   const updateUser = (data) => {
+    persistUser(data);
     setUser(data);
-    localStorage.setItem('userInfo', JSON.stringify(data));
   };
 
   return (

@@ -28,7 +28,8 @@ const VerifyEmail = () => {
             <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                style={{ width: '100%', maxWidth: '450px', padding: '3.5rem 2.5rem', borderRadius: '32px', backgroundColor: 'white', boxShadow: 'var(--shadow-xl)', textAlign: 'center' }}
+                className="auth-card"
+                style={{ width: '100%', maxWidth: '450px', textAlign: 'center' }}
             >
                 {status === 'verifying' && (
                     <>

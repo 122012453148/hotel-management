@@ -4,7 +4,7 @@ import api from '../services/api';
 import HotelListItem from '../components/HotelListItem';
 import SearchFilterSidebar from '../components/SearchFilterSidebar';
 import Pagination from '../components/Pagination';
-import { Search, MapPin, X, Loader2 } from 'lucide-react';
+import { Search, MapPin, X, Loader2, SlidersHorizontal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import debounce from 'lodash.debounce';
 import LocationInput from '../components/LocationInput';
@@ -23,6 +23,7 @@ const Hotels = () => {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   const [filters, setFilters] = useState({ 
     rating: '', 
@@ -77,13 +78,13 @@ const Hotels = () => {
     <div className="container hotels-container" style={{ padding: '4rem 0' }}>
       <div style={{ marginBottom: '4rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1 style={{ fontSize: '3.5rem', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-1.5px' }}>Find Your Dream Stay</h1>
-          <p style={{ color: 'var(--text-light)', fontSize: '1.25rem' }}>Discover {total} luxury stays across the globe</p>
+          <h1 className="hotels-title" style={{ fontSize: '3.5rem', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-1.5px' }}>Find Your Dream Stay</h1>
+          <p className="hotels-subtitle" style={{ color: 'var(--text-light)', fontSize: '1.25rem' }}>Discover {total} luxury stays across the globe</p>
         </div>
 
         {/* Search Bar with Global Suggestions */}
-        <div style={{ position: 'relative', maxWidth: '700px', margin: '0 auto' }}>
-          <form onSubmit={handleSearchSubmit} style={{ 
+        <div className="search-bar-wrapper" style={{ position: 'relative', maxWidth: '700px', margin: '0 auto' }}>
+          <form onSubmit={handleSearchSubmit} className="search-form-flex" style={{ 
             display: 'flex', gap: '0.5rem', 
             backgroundColor: 'white', padding: '0.5rem', 
             borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
@@ -96,10 +97,10 @@ const Hotels = () => {
                 onChange={(val) => {
                   setSearch(val);
                 }} 
-                inputStyle={{ boxShadow: 'none', border: 'none', backgroundColor: 'transparent' }}
+                inputStyle={{ boxShadow: 'none', border: 'none', backgroundColor: 'transparent', width: '100%' }}
               />
             </div>
-            <button type="submit" className="btn-primary" style={{ padding: '0 2.5rem', borderRadius: '16px', height: '100%' }}>
+            <button type="submit" className="btn-primary search-submit-btn" style={{ padding: '0 2.5rem', borderRadius: '16px', height: '48px' }}>
               <Search size={22} color="white" />
             </button>
           </form>
@@ -107,11 +108,76 @@ const Hotels = () => {
       </div>
 
       <div className="hotels-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 320px) 1fr', gap: '4rem' }}>
-        <SearchFilterSidebar 
-          filters={filters} 
-          setFilters={(f) => {setFilters(f); setPage(1);}} 
-          onClear={clearFilters} 
-        />
+        <div className="desktop-filter-sidebar glass-morphism" style={{ padding: '2rem', borderRadius: '24px', height: 'fit-content', position: 'sticky', top: '100px' }}>
+          <SearchFilterSidebar 
+            filters={filters} 
+            setFilters={(f) => {setFilters(f); setPage(1);}} 
+            onClear={clearFilters} 
+          />
+        </div>
+
+        {/* Mobile Filter Toggle */}
+        <div className="filter-sidebar-mobile">
+          <button 
+            onClick={() => setIsMobileFilterOpen(true)}
+            style={{ 
+              backgroundColor: 'var(--primary)', 
+              color: 'var(--secondary)', 
+              padding: '1rem 2rem', 
+              borderRadius: '30px', 
+              fontWeight: 800, 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '10px',
+              boxShadow: '0 10px 30px rgba(161, 188, 152, 0.4)'
+            }}
+          >
+            <SlidersHorizontal size={20} /> Filters
+          </button>
+        </div>
+
+        {/* Mobile Filter Overlay */}
+        <AnimatePresence>
+          {isMobileFilterOpen && (
+            <>
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsMobileFilterOpen(false)}
+                style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, backdropFilter: 'blur(5px)' }}
+              />
+              <motion.div 
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                style={{ 
+                  position: 'fixed', 
+                  top: 0, 
+                  right: 0, 
+                  bottom: 0, 
+                  width: '90%', 
+                  maxWidth: '350px', 
+                  backgroundColor: 'white', 
+                  zIndex: 1001, 
+                  padding: '2rem',
+                  overflowY: 'auto'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                  <h3 style={{ margin: 0 }}>Filters</h3>
+                  <button onClick={() => setIsMobileFilterOpen(false)} style={{ background: 'none', border: 'none' }}><X size={24} /></button>
+                </div>
+                <SearchFilterSidebar 
+                  filters={filters} 
+                  setFilters={(f) => {setFilters(f); setPage(1);}} 
+                  onClear={() => { clearFilters(); setIsMobileFilterOpen(false); }} 
+                />
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
         <main>
           {loading ? (
@@ -159,11 +225,23 @@ const Hotels = () => {
 
         @media (max-width: 768px) {
            .hotels-container {
-              padding: 2rem 0 !important;
+              padding: 2rem 1rem !important;
            }
-           h1 {
-              font-size: 2.5rem !important;
+           .hotels-title {
+              font-size: 2rem !important;
               letter-spacing: -1px !important;
+              line-height: 1.2;
+           }
+           .hotels-subtitle {
+              font-size: 1rem !important;
+           }
+           .search-form-flex {
+              padding: 0.25rem !important;
+              border-radius: 14px !important;
+           }
+           .search-submit-btn {
+              padding: 0 1.25rem !important;
+              border-radius: 12px !important;
            }
         }
       `}</style>

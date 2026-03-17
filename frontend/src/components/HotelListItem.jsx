@@ -45,21 +45,20 @@ const HotelListItem = ({ hotel }) => {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       whileHover={{ scale: 1.01 }}
+      className="hotel-list-item-card"
       style={{ 
         backgroundColor: 'white', 
         borderRadius: '24px', 
         overflow: 'hidden', 
         boxShadow: 'var(--shadow)',
-        display: 'flex',
-        flexDirection: window.innerWidth < 768 ? 'column' : 'row',
         marginBottom: '2rem',
         border: '1px solid #f3f4f6',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}
     >
       {/* Image Section */}
-      <div style={{ 
-        width: window.innerWidth < 768 ? '100%' : '350px', 
+      <div className="hotel-list-item-image" style={{ 
+        width: '350px', 
         height: '280px', 
         position: 'relative',
         flexShrink: 0
@@ -94,8 +93,8 @@ const HotelListItem = ({ hotel }) => {
       </div>
 
       {/* Details Section */}
-      <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
+      <div className="hotel-list-item-details" style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--secondary)' }}>{hotel.name}</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-light)', fontSize: '0.95rem' }}>
@@ -103,7 +102,7 @@ const HotelListItem = ({ hotel }) => {
               {hotel.location}
             </div>
           </div>
-          <div style={{ textAlign: 'right' }}>
+          <div style={{ textAlign: 'left' }}>
             <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--secondary)' }}>₹{hotel.minPrice || 3500}</div>
             <div style={{ fontSize: '0.85rem', color: '#9ca3af' }}>per night</div>
           </div>
@@ -113,8 +112,8 @@ const HotelListItem = ({ hotel }) => {
           {hotel.description || 'Experience ultimate luxury and comfort in the heart of the city with world-class amenities.'}
         </p>
 
-        <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'end' }}>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             {hotel.amenities?.slice(0, 4).map((a, i) => (
               <div key={i} title={a} style={{ backgroundColor: '#f9fafb', padding: '8px', borderRadius: '10px', color: '#4b5563' }}>
                 {getAmenityIcon(a) || <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{a[0]}</span>}
@@ -124,7 +123,8 @@ const HotelListItem = ({ hotel }) => {
 
           <Link to={`/hotels/${hotel._id}`} className="btn-primary" style={{ 
             padding: '12px 28px', borderRadius: '14px', 
-            fontWeight: 700, boxShadow: '0 4px 12px rgba(196, 164, 132, 0.3)' 
+            fontWeight: 700, boxShadow: '0 4px 12px rgba(196, 164, 132, 0.3)',
+            width: 'fit-content'
           }}>
             View Details
           </Link>

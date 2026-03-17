@@ -113,7 +113,12 @@ const AdminPanel = () => {
   };
 
   const renderStats = () => (
-    <div className="admin-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '40px' }}>
+    <div className="admin-stats-grid" style={{ 
+      display: 'grid', 
+      gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+      gap: '24px', 
+      marginBottom: '40px' 
+    }}>
       {[
         { label: 'Total Users', value: stats?.totalUsers, color: '#6366f1', icon: <Users /> },
         { label: 'Total Hotels', value: stats?.totalHotels, color: '#10b981', icon: <Building2 /> },
@@ -143,11 +148,11 @@ const AdminPanel = () => {
       <div style={{ position: 'absolute', top: '20%', left: '10%', width: '100%', height: '100%', opacity: 0.03, pointerEvents: 'none', backgroundImage: 'radial-gradient(#AEB784 1px, transparent 1px)', backgroundSize: '30px 30px', zIndex: 0 }}></div>
 
       <div className="container" style={{ padding: '40px 0', position: 'relative', zIndex: 1 }}>
-        <div className="admin-panel-grid" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '2.5rem', alignItems: 'start' }}>
+        <div className="admin-panel-grid">
           <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
         <main style={{ textAlign: 'left', minWidth: 0 }}>
-          <div style={{ 
+          <div className="admin-header-flex glass-morphism" style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center', 
@@ -156,9 +161,10 @@ const AdminPanel = () => {
             padding: '1.5rem 2rem',
             borderRadius: '24px',
             boxShadow: '0 4px 15px rgba(0,0,0,0.02)',
-            border: '1px solid #f1f5f9'
+            border: '1px solid #f1f5f9',
+            gap: '1.5rem'
           }}>
-            <div>
+            <div style={{ minWidth: '200px' }}>
               <h1 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--secondary)', letterSpacing: '-0.5px', marginBottom: '4px', lineHeight: 1.1 }}>
                 {activeTab === 'dashboard' ? 'Admin Pulse' : 
                  activeTab === 'users' ? 'Community Management' : 
@@ -170,8 +176,8 @@ const AdminPanel = () => {
               <p style={{ color: 'var(--text-light)', fontSize: '14px', fontWeight: 500 }}>Oversee and scale the Royal Hotel ecosystem.</p>
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingRight: '2rem', borderRight: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingRight: '2rem', borderRight: '1px solid #e2e8f0' }} className="hide-mobile">
                 <NotificationPanel />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -214,8 +220,8 @@ const AdminPanel = () => {
                 )}
 
                 {activeTab === 'users' && (
-                  <div className="glass-morphism" style={{ borderRadius: '32px', overflow: 'hidden' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <div className="glass-morphism table-container" style={{ borderRadius: '32px' }}>
+                    <table style={{ minWidth: '700px', width: '100%', borderCollapse: 'collapse' }}>
                       <thead style={{ backgroundColor: '#f9fafb' }}>
                         <tr>
                           <th style={{ padding: '1.5rem', textAlign: 'left' }}>USER</th>
@@ -361,8 +367,8 @@ const AdminPanel = () => {
                 )}
 
                 {activeTab === 'bookings' && (
-                  <div className="glass-morphism" style={{ borderRadius: '32px', overflow: 'hidden' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <div className="glass-morphism table-container" style={{ borderRadius: '32px' }}>
+                    <table style={{ minWidth: '700px', width: '100%', borderCollapse: 'collapse' }}>
                       <thead style={{ backgroundColor: '#f9fafb' }}>
                         <tr>
                           <th style={{ padding: '1.5rem', textAlign: 'left' }}>ID</th>
@@ -393,7 +399,7 @@ const AdminPanel = () => {
                 )}
 
                 {activeTab === 'analytics' && analytics && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                      <div className="glass-morphism" style={{ padding: '2.5rem', borderRadius: '32px' }}>
                         <h3 style={{ marginBottom: '2rem' }}>Monthly Revenue Growth</h3>
                         {analytics.monthlyRevenue.map((m, i) => (
@@ -452,8 +458,8 @@ const AdminPanel = () => {
                 )}
 
                 {activeTab === 'audit' && (
-                  <div className="glass-morphism" style={{ borderRadius: '32px', overflow: 'hidden' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <div className="glass-morphism table-container" style={{ borderRadius: '32px' }}>
+                    <table style={{ minWidth: '700px', width: '100%', borderCollapse: 'collapse' }}>
                       <thead style={{ backgroundColor: '#f9fafb' }}>
                         <tr>
                           <th style={{ padding: '1.5rem', textAlign: 'left' }}>TIMESTAMP</th>
@@ -502,15 +508,42 @@ const AdminPanel = () => {
         table th { letter-spacing: 1px; font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 800; padding: 20px 24px !important; }
         table td { padding: 20px 24px !important; vertical-align: middle; }
         
-        @media (max-width: 1200px) {
-          .admin-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .admin-panel-grid { grid-template-columns: 1fr !important; }
+        .admin-panel-grid {
+          display: grid;
+          grid-template-columns: 280px 1fr;
+          gap: 2.5rem;
+          align-items: start;
         }
+
+        .table-container {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 1200px) {
+          .admin-panel-grid { grid-template-columns: 1fr !important; }
+          .admin-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        
         @media (max-width: 768px) {
           .container { padding: 20px !important; }
-          h1 { font-size: 28px !important; }
-          .admin-stats-grid { grid-template-columns: 1fr !important; }
+          .admin-header-flex { 
+            flex-direction: column !important; 
+            align-items: flex-start !important; 
+            padding: 1.5rem !important;
+            gap: 1rem !important;
+          }
+          .admin-header-flex > div:last-child {
+            width: 100%;
+            justify-content: flex-start;
+          }
+          .admin-stats-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
           .glass-morphism { padding: 1.5rem !important; }
+          h1 { font-size: 24px !important; }
+          
+          .admin-header-flex .hide-mobile {
+            display: none !important;
+          }
         }
       `}</style>
       </div>

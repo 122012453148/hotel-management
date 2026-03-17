@@ -33,18 +33,19 @@ const Home = () => {
   return (
     <div className="home-page" style={{ overflowX: 'hidden' }}>
       {/* Hero Section */}
-      <section className="hero-section" style={{ 
-        height: '100vh', 
-        minHeight: '600px',
+      <section className="hero-section hero-responsive" style={{ 
+        minHeight: '100vh', 
         position: 'relative', 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("/landing-bg.jpg")',
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url("/landing-bg.jpg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        paddingBottom: '220px',
+        textAlign: 'center'
       }}>
-        <div className="container" style={{ textAlign: 'center', zIndex: 1, marginTop: '-80px' }}>
+        <div className="container" style={{ textAlign: 'center', zIndex: 1 }}>
           <motion.h4 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -67,14 +68,21 @@ const Home = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
             className="hero-subtitle"
-            style={{ color: 'white', fontSize: '1.1rem', marginBottom: '3rem', maxWidth: '700px', margin: '0 auto 3.5rem auto', lineHeight: '1.8', opacity: 0.9 }}
+            style={{ color: 'white', fontSize: '1.1rem', marginBottom: '3rem', maxWidth: '700px', margin: '0 auto 3rem auto', lineHeight: '1.8', opacity: 0.9 }}
           >
             If you are looking for a break from the everyday hustle, discover our handpicked luxury stays tailored for your ultimate comfort and tranquility.
           </motion.p>
           
-          <button className="btn-primary" onClick={() => navigate('/hotels')}>
-            Get Started
-          </button>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            style={{ marginTop: '2.5rem' }}
+          >
+            <button className="btn-primary" onClick={() => navigate('/hotels')} style={{ padding: '1rem 2.5rem', fontSize: '1rem', letterSpacing: '2px' }}>
+              Get Started
+            </button>
+          </motion.div>
         </div>
 
         {/* Floating Search Bar */}
@@ -134,7 +142,7 @@ const Home = () => {
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
             <h2 className="section-title" style={{ fontSize: '36px', fontWeight: 600, color: '#222', marginBottom: '1.5rem' }}>Hotel Accommodation</h2>
-            <p style={{ color: '#777', maxWidth: '600px', margin: '0 auto', fontSize: '14px' }}>
+            <p className="section-desc" style={{ color: '#777', maxWidth: '600px', margin: '0 auto', fontSize: '14px' }}>
               We all live in an age that belongs to the young at heart. Life that is becoming extremely fast, and we must find time for peace.
             </p>
           </div>
@@ -155,11 +163,11 @@ const Home = () => {
       <section style={{ padding: '7rem 0', backgroundColor: '#e4e9cd' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
-            <h2 style={{ fontSize: '36px', fontWeight: 600, color: '#222', marginBottom: '1.5rem' }}>Royal Facilities</h2>
-            <p style={{ color: '#777', fontSize: '14px' }}>Who are in extremely love with eco friendly system and premium service.</p>
+            <h2 className="section-title" style={{ fontSize: '36px', fontWeight: 600, color: '#222', marginBottom: '1.5rem' }}>Royal Facilities</h2>
+            <p className="section-desc" style={{ color: '#777', fontSize: '14px' }}>Who are in extremely love with eco friendly system and premium service.</p>
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
+          <div className="facilities-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
             {[
               { title: 'Restaurant', desc: 'Usage of the Internet is becoming more common due to rapid advancement of technology.' },
               { title: 'Sports Club', desc: 'Usage of the Internet is becoming more common due to rapid advancement of technology.' },
@@ -168,7 +176,7 @@ const Home = () => {
               { title: 'Gymnasium', desc: 'Usage of the Internet is becoming more common due to rapid advancement of technology.' },
               { title: 'Bar', desc: 'Usage of the Internet is becoming more common due to rapid advancement of technology.' }
             ].map((fac, i) => (
-              <div key={i} style={{ backgroundColor: 'white', padding: '50px 30px', textAlign: 'center', border: '1px solid #A1BC98', borderRadius: '24px', transition: 'all 0.3s ease' }}>
+              <div key={i} className="facility-card" style={{ backgroundColor: 'white', padding: '50px 30px', textAlign: 'center', border: '1px solid #A1BC98', borderRadius: '24px', transition: 'all 0.3s ease' }}>
                 <h4 style={{ marginBottom: '1.2rem', color: '#2c332b', fontWeight: 600 }}>{fac.title}</h4>
                 <p style={{ fontSize: '13px', color: '#4a5448', lineHeight: '24px' }}>{fac.desc}</p>
               </div>
@@ -179,17 +187,17 @@ const Home = () => {
 
       {/* About Section (New) */}
       <section style={{ padding: '7rem 0' }}>
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+        <div className="container about-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: '36px', fontWeight: 600, color: '#222', marginBottom: '2rem', lineHeight: '1.3' }}>About Us <br/>Our History <br/>Mission & Vision</h2>
-            <p style={{ color: '#777', fontSize: '14px', lineHeight: '28px', marginBottom: '2rem' }}>
+            <h2 className="section-title" style={{ fontSize: '36px', fontWeight: 600, color: '#222', marginBottom: '2rem', lineHeight: '1.3' }}>About Us <br/>Our History <br/>Mission & Vision</h2>
+            <p className="section-desc" style={{ color: '#777', fontSize: '14px', lineHeight: '28px', marginBottom: '2rem' }}>
               As conscious traveling paupers we must always be concerned about our dear Mother Earth. If you think about it, you travel across her face, and She is the one that gives you the memories. 
               <br/><br/>
               That’s why it’s crucial that, as travelers, our behavior is beyond reproach. Inappropriate behavior is often laughed off, but we believe in respecting every destination.
             </p>
             <button className="btn-primary">Learn More</button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+          <div className="about-image-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
              <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=400" style={{ width: '100%', height: '250px', objectFit: 'cover' }} alt="Hotel 1" />
              <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=400" style={{ width: '100%', height: '250px', objectFit: 'cover' }} alt="Hotel 2" />
              <img src="https://images.unsplash.com/photo-1544124499-58912cbddaad?auto=format&fit=crop&q=80&w=400" style={{ width: '100%', height: '250px', objectFit: 'cover', gridColumn: 'span 2' }} alt="Hotel 3" />
@@ -247,19 +255,43 @@ const Home = () => {
           .search-grid {
             grid-template-columns: 1fr !important;
             gap: 1rem !important;
+            padding: 1.5rem !important;
           }
           .search-col-full {
              grid-column: span 1 !important;
           }
           .hero-title {
-             font-size: 3rem !important;
+             font-size: 2.5rem !important;
           }
           .hero-subtitle {
-             font-size: 1rem !important;
+             font-size: 0.95rem !important;
              margin-bottom: 2rem !important;
+             padding: 0 1rem;
           }
           .section-title {
-             font-size: 28px !important;
+             font-size: 24px !important;
+             margin-bottom: 1rem !important;
+          }
+          .section-desc {
+             font-size: 13px !important;
+          }
+          .hero-responsive {
+            padding-bottom: 50px !important;
+            min-height: 80vh !important;
+          }
+          .facility-card {
+            padding: 30px 20px !important;
+          }
+          .about-container {
+             grid-template-columns: 1fr !important;
+             gap: 2rem !important;
+             text-align: center;
+          }
+          .about-image-grid {
+             height: auto !important;
+          }
+          .about-image-grid img {
+             height: 150px !important;
           }
         }
       `}</style>

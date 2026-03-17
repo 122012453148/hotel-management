@@ -40,15 +40,26 @@ const Navbar = () => {
           <Link to="/hotels" style={{ fontWeight: 600, color: 'white' }}>Accommodation</Link>
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+              {/* Logged-in user greeting */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <div style={{
+                  width: '32px', height: '32px', borderRadius: '50%',
+                  backgroundColor: 'white', color: 'var(--primary)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 800, fontSize: '13px', flexShrink: 0
+                }}>
+                  {user.name?.charAt(0).toUpperCase()}
+                </div>
+                <span style={{ color: 'white', fontWeight: 700, fontSize: '12px' }}>
+                  Hi, {user.name?.split(' ')[0]}
+                </span>
+              </div>
+
               <NotificationPanel />
-              
-              {user && (
-                <>
-                  <Link to="/dashboard" style={{ fontWeight: 600, color: 'white' }}>Dashboard</Link>
-                  <Link to="/wishlist" style={{ fontWeight: 600, color: 'white' }}>Wishlist</Link>
-                </>
-              )}
-              
+
+              <Link to="/dashboard" style={{ fontWeight: 600, color: 'white' }}>Dashboard</Link>
+              <Link to="/wishlist" style={{ fontWeight: 600, color: 'white' }}>Wishlist</Link>
+
               <button 
                 onClick={handleLogout}
                 style={{ 
@@ -88,14 +99,16 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             style={{ 
               display: 'none', 
               backgroundColor: 'white', 
               width: '100%', 
               flexDirection: 'column',
-              padding: '1rem 0',
-              boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
-              overflow: 'hidden'
+              padding: '1.5rem 0',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+              overflow: 'hidden',
+              borderBottom: '4px solid var(--primary)'
             }}
             className="mobile-menu-content"
           >
@@ -104,13 +117,22 @@ const Navbar = () => {
               <Link to="/hotels" onClick={() => setIsOpen(false)} style={{ padding: '12px 0', borderBottom: '1px solid #f3f4f6', color: 'var(--secondary)', fontWeight: 600 }}>Accommodation</Link>
               {user ? (
                 <>
-                  <Link to="/dashboard" onClick={() => setIsOpen(false)} style={{ padding: '12px 0', borderBottom: '1px solid #f3f4f6', color: 'var(--secondary)', fontWeight: 600 }}>Dashboard</Link>
-                  <Link to="/wishlist" onClick={() => setIsOpen(false)} style={{ padding: '12px 0', borderBottom: '1px solid #f3f4f6', color: 'var(--secondary)', fontWeight: 600 }}>Wishlist</Link>
+                  <div style={{ padding: '12px 0', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '13px' }}>
+                        {user.name?.charAt(0).toUpperCase()}
+                      </div>
+                      <span style={{ color: 'var(--secondary)', fontWeight: 700, fontSize: '14px' }}>Hi, {user.name?.split(' ')[0]}</span>
+                    </div>
+                    <NotificationPanel />
+                  </div>
+                  <Link to="/dashboard" onClick={() => setIsOpen(false)} style={{ padding: '15px 0', borderBottom: '1px solid #f3f4f6', color: 'var(--secondary)', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '10px' }}><LayoutDashboard size={18} /> Dashboard</Link>
+                  <Link to="/wishlist" onClick={() => setIsOpen(false)} style={{ padding: '15px 0', borderBottom: '1px solid #f3f4f6', color: 'var(--secondary)', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '10px' }}><Hotel size={18} /> Wishlist</Link>
                   <button 
                     onClick={() => { handleLogout(); setIsOpen(false); }}
-                    style={{ padding: '15px 0', textAlign: 'left', color: '#ef4444', fontWeight: 800, backgroundColor: 'transparent' }}
+                    style={{ padding: '20px 0', textAlign: 'left', color: '#ef4444', fontWeight: 800, backgroundColor: 'transparent', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
                   >
-                    Logout
+                    <LogOut size={18} /> Logout
                   </button>
                 </>
               ) : (

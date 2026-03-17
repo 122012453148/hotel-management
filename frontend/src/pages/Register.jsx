@@ -61,7 +61,7 @@ const Register = () => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        style={{ width: '100%', maxWidth: '500px', padding: '3.5rem', borderRadius: '32px', backgroundColor: 'white', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}
+        className="auth-card"
       >
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--secondary)', letterSpacing: '-1px' }}>
@@ -151,7 +151,7 @@ const Register = () => {
           <div style={{ flex: 1, height: '1px', backgroundColor: '#f3f4f6' }}></div>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div className="social-btns-flex">
           <button onClick={() => handleOAuthLogin('google')} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '1rem', borderRadius: '16px', border: '1.5px solid #f3f4f6', backgroundColor: '#fcfcfc', fontWeight: 700, cursor: 'pointer', color: 'var(--secondary)' }}>
             <FcGoogle size={20} /> Google
           </button>

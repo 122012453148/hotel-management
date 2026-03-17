@@ -25,7 +25,7 @@ const SearchFilterSidebar = ({ filters, setFilters, onClear }) => {
   };
 
   return (
-    <aside className="glass-morphism" style={{ padding: '2rem', borderRadius: '24px', height: 'fit-content', position: 'sticky', top: '100px' }}>
+    <aside className="filter-sidebar-content" style={{ padding: '0', height: 'fit-content' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
         <div style={{ backgroundColor: 'var(--primary-light)', padding: '0.5rem', borderRadius: '10px' }}>
           <SlidersHorizontal size={20} color="var(--primary)" />

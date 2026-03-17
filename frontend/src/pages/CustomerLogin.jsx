@@ -20,7 +20,10 @@ const CustomerLogin = () => {
     if (userParam) {
       try {
         const userInfo = JSON.parse(decodeURIComponent(userParam));
-        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        // Save to role-specific key so sessions don't overwrite each other
+        const keyMap = { customer: 'customerInfo', manager: 'managerInfo', admin: 'adminInfo' };
+        const key = keyMap[userInfo.role] || 'customerInfo';
+        localStorage.setItem(key, JSON.stringify(userInfo));
         if (userInfo.role === 'manager') window.location.href = '/manager/dashboard';
         else if (userInfo.role === 'admin') window.location.href = '/admin/dashboard';
         else window.location.href = '/';
@@ -33,13 +36,10 @@ const CustomerLogin = () => {
     setLoading(true);
     setError('');
     try {
-      const user = await login(email, password);
-      if (user.role !== 'customer') {
-        throw new Error('Invalid credentials for customer profile.');
-      }
+      await login(email, password, 'customer');
       navigate('/');
     } catch (err) {
-      setError(err.message || err.response?.data?.message || 'Invalid email or password');
+      setError(err.response?.data?.message || err.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const CustomerLogin = () => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        style={{ width: '100%', maxWidth: '450px', padding: '3.5rem', borderRadius: '32px', backgroundColor: 'white', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}
+        className="auth-card"
       >
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <div style={{ width: '80px', height: '80px', margin: '0 auto 1.5rem', borderRadius: '50%', overflow: 'hidden', border: '3px solid #eff6ff', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }}>
@@ -103,7 +103,7 @@ const CustomerLogin = () => {
           <div style={{ flex: 1, height: '1px', backgroundColor: '#f3f4f6' }}></div>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div className="social-btns-flex">
           <button onClick={() => handleOAuthLogin('google')} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '1rem', borderRadius: '16px', border: '1.5px solid #f3f4f6', backgroundColor: '#fcfcfc', fontWeight: 700, cursor: 'pointer', color: 'var(--secondary)' }}>
             <FcGoogle size={20} /> Google
           </button>

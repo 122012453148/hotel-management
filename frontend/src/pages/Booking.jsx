@@ -115,10 +115,10 @@ const Booking = () => {
         <ArrowLeft size={18} /> Back to Selection
       </button>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '4rem' }}>
+      <div className="booking-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '4rem' }}>
         <main>
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-            <div style={{ display: 'flex', gap: '2rem', marginBottom: '4rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '2rem', marginBottom: '4rem', alignItems: 'center', flexWrap: 'wrap' }} className="hotel-brief-header">
               <div style={{ width: '200px', height: '140px', borderRadius: '24px', overflow: 'hidden', flexShrink: 0 }}>
                 <img src={hotel.images?.[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={hotel.name} />
               </div>
@@ -179,6 +179,23 @@ const Booking = () => {
           />
         </aside>
       </div>
+      <style>{`
+        @media (max-width: 1024px) {
+          .booking-layout {
+            grid-template-columns: 1fr !important;
+            gap: 3rem !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .hotel-brief-header {
+            gap: 1.5rem !important;
+            margin-bottom: 2.5rem !important;
+          }
+          .hotel-brief-header img { width: 100% !important; }
+          .hotel-brief-header > div:first-child { width: 100% !important; height: 180px !important; }
+          h1 { font-size: 1.75rem !important; }
+        }
+      `}</style>
     </div>
   );
 };

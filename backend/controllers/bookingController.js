@@ -46,7 +46,12 @@ exports.getBookingById = async (req, res) => {
         const booking = await Booking.findById(req.params.id).populate('hotel room');
         if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
-        if (booking.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+        // Allow: the booking's customer, the hotel's manager, or an admin
+        const isBookingOwner = booking.user.toString() === req.user._id.toString();
+        const isHotelManager = booking.hotel && booking.hotel.manager && booking.hotel.manager.toString() === req.user._id.toString();
+        const isAdmin = req.user.role === 'admin';
+
+        if (!isBookingOwner && !isHotelManager && !isAdmin) {
             return res.status(401).json({ message: 'Not authorized' });
         }
 
@@ -72,11 +77,14 @@ exports.updatePaymentStatus = async (req, res) => {
 
         // Remove occupiedRooms increment here, it will be done on manager confirmation
 
-        // Emit real-time update
+        // Emit real-time update only to the specific hotel manager
         const io = req.app.get('socketio');
-        io.emit('roomBooked', { roomId: booking.room, availability: selectedRoom.totalRooms - selectedRoom.occupiedRooms });
+        const hotel = await Hotel.findById(booking.hotel);
+        if (hotel) {
+            io.to(hotel.manager.toString()).emit('roomBooked', { roomId: booking.room, availability: selectedRoom.totalRooms - selectedRoom.occupiedRooms });
+        }
 
-        // Send Notification
+        // Send Notification to the customer
         await sendNotification(io, {
             userId: req.user._id,
             userEmail: req.user.email,
@@ -86,8 +94,7 @@ exports.updatePaymentStatus = async (req, res) => {
             link: '/dashboard'
         });
 
-        // Notify the manager
-        const hotel = await Hotel.findById(booking.hotel);
+        // Notify ONLY the specific manager who owns this hotel
         if (hotel) {
             await sendNotification(io, {
                 userId: hotel.manager,
@@ -139,10 +146,15 @@ exports.getAllBookings = async (req, res) => {
 // @route DELETE /api/bookings/:id
 exports.cancelBooking = async (req, res) => {
     try {
-        const booking = await Booking.findById(req.params.id);
+        const booking = await Booking.findById(req.params.id).populate('hotel');
         if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
-        if (booking.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+        // Allow: the booking's customer, the hotel's manager, or an admin
+        const isBookingOwner = booking.user.toString() === req.user._id.toString();
+        const isHotelManager = booking.hotel && booking.hotel.manager && booking.hotel.manager.toString() === req.user._id.toString();
+        const isAdmin = req.user.role === 'admin';
+
+        if (!isBookingOwner && !isHotelManager && !isAdmin) {
             return res.status(401).json({ message: 'Not authorized' });
         }
 
@@ -155,16 +167,28 @@ exports.cancelBooking = async (req, res) => {
         booking.status = 'Cancelled';
         await booking.save();
 
-        // Send Notification
+        // Send Notification to the customer
         const io = req.app.get('socketio');
         await sendNotification(io, {
             userId: booking.user,
-            userEmail: req.user.email, // Assume cancelling user's email or popuate it
+            userEmail: req.user.email,
             title: 'Booking Cancelled ❌',
-            message: `Your booking for ${room ? room.type : 'room'} has been successfully cancelled.`,
+            message: `Your booking for ${room ? room.roomType : 'room'} has been successfully cancelled.`,
             type: 'cancellation',
             link: '/profile'
         });
+
+        // If cancelled by customer, notify ONLY the specific hotel manager
+        if (isBookingOwner && booking.hotel && booking.hotel.manager) {
+            await sendNotification(io, {
+                userId: booking.hotel.manager,
+                userEmail: '',
+                title: 'Booking Cancelled by Customer ❌',
+                message: `A customer has cancelled their booking at ${booking.hotel.name}.`,
+                type: 'cancellation',
+                link: '/manager/dashboard'
+            });
+        }
 
         res.json({ message: 'Booking cancelled successfully' });
     } catch (error) {
