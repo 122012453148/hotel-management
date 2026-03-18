@@ -65,6 +65,20 @@ app.use('/api/rooms', require('./routes/roomRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/wishlist', require('./routes/wishlistRoutes'));
 app.use('/api/messages', require('./routes/messageRoutes'));
+app.use('/api/promotions', require('./routes/promotionRoutes'));
+
+app.get('/api/diag', async (req, res) => {
+    try {
+        const collections = await require('mongoose').connection.db.listCollections().toArray();
+        const stats = {};
+        for(let c of collections) {
+            stats[c.name] = await require('mongoose').connection.db.collection(c.name).countDocuments();
+        }
+        res.json({ collections: collections.map(c => c.name), counts: stats });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
 
 // Error Middleware
 app.use((err, req, res, next) => {

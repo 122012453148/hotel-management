@@ -68,7 +68,7 @@ const HotelListItem = ({ hotel }) => {
         <img 
           src={hotel.images?.[0] || 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=800'} 
           alt={hotel.name} 
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         />
         <button
           onClick={handleWishlistToggle}

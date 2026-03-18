@@ -3,6 +3,7 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Star, MessageSquare, Send, User } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'react-hot-toast';
 
 const ReviewSection = ({ hotelId }) => {
   const { user } = useAuth();
@@ -26,7 +27,7 @@ const ReviewSection = ({ hotelId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user) return alert('Please login to leave a review');
+    if (!user) return toast.error('Please login to leave a review');
     
     try {
       setLoading(true);
@@ -35,7 +36,7 @@ const ReviewSection = ({ hotelId }) => {
       setRating(5);
       fetchReviews();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to submit review');
+      toast.error(err.response?.data?.message || 'Failed to submit review');
     } finally {
       setLoading(false);
     }
@@ -47,33 +48,31 @@ const ReviewSection = ({ hotelId }) => {
         <MessageSquare size={32} color="var(--primary)" /> Guest Reviews
       </h2>
 
-      {user && (
-        <form onSubmit={handleSubmit} className="glass-morphism" style={{ padding: '2rem', borderRadius: '24px', marginBottom: '3rem' }}>
-          <h3 style={{ marginBottom: '1rem' }}>Leave a Review</h3>
-          <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '1.5rem' }}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star 
-                key={star} 
-                size={24} 
-                color={star <= rating ? '#f59e0b' : '#d1d5db'} 
-                fill={star <= rating ? '#f59e0b' : 'transparent'}
-                style={{ cursor: 'pointer' }}
-                onClick={() => setRating(star)}
-              />
-            ))}
-          </div>
-          <textarea 
-            placeholder="Share your experience..." 
-            value={comment} 
-            onChange={(e) => setComment(e.target.value)}
-            style={{ marginBottom: '1.5rem' }}
-            required
-          />
-          <button type="submit" disabled={loading} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {loading ? 'Submitting...' : <><Send size={18} /> Post Review</>}
-          </button>
-        </form>
-      )}
+      <form onSubmit={handleSubmit} className="glass-morphism" style={{ padding: '2rem', borderRadius: '24px', marginBottom: '3rem' }}>
+        <h3 style={{ marginBottom: '1rem' }}>Leave a Review</h3>
+        <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '1.5rem' }}>
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Star 
+              key={star} 
+              size={24} 
+              color={star <= rating ? '#f59e0b' : '#d1d5db'} 
+              fill={star <= rating ? '#f59e0b' : 'transparent'}
+              style={{ cursor: 'pointer' }}
+              onClick={() => setRating(star)}
+            />
+          ))}
+        </div>
+        <textarea 
+          placeholder={user ? "Share your experience..." : "Please login to share your experience..."} 
+          value={comment} 
+          onChange={(e) => setComment(e.target.value)}
+          style={{ marginBottom: '1.5rem', width: '100%', minHeight: '120px', padding: '1rem', borderRadius: '16px', border: '1px solid #e2e8f0', resize: 'vertical' }}
+          required
+        />
+        <button type="submit" disabled={loading} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {loading ? 'Submitting...' : <><Send size={18} /> Post Review</>}
+        </button>
+      </form>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         {reviews.length === 0 ? (

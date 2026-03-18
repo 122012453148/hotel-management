@@ -47,6 +47,8 @@ const HotelCard = ({ hotel }) => {
         overflow: 'hidden', 
         boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
         height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
         position: 'relative',
         border: '1px solid #f1f3f0'
       }}
@@ -109,7 +111,7 @@ const HotelCard = ({ hotel }) => {
           {hotel.rating || 'N/A'}
         </div>
       </div>
-      <div style={{ padding: '1.75rem' }}>
+      <div style={{ padding: '1.75rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <h3 style={{ marginBottom: '0.5rem', fontSize: '1.25rem', fontWeight: 800, color: 'var(--secondary)' }}>{hotel.name}</h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 500 }}>
           <MapPin size={16} color="var(--primary)" />
@@ -121,7 +123,7 @@ const HotelCard = ({ hotel }) => {
             <span style={{ fontWeight: 900, fontSize: '1.3rem', color: 'var(--secondary)' }}>₹{hotel.minPrice || 3500}</span>
             <span style={{ color: 'var(--text-light)', fontSize: '0.85rem', fontWeight: 600 }}>/night</span>
           </div>
-          <Link to={`/hotels/${hotel._id}`} className="btn-primary" style={{ padding: '10px 20px', fontSize: '0.85rem', borderRadius: '12px', textTransform: 'none' }}>View Details</Link>
+          <Link to={`/hotels/${hotel._id}`} className="btn-primary" style={{ padding: '10px 20px', fontSize: '0.85rem', borderRadius: '12px', textTransform: 'none', marginLeft: 'auto' }}>View Details</Link>
         </div>
       </div>
       <style>{`

@@ -25,7 +25,30 @@ const RoomCard = ({ room, onSelect, loading }) => {
         }}
       >
         <div>
-          <h3 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--secondary)' }}>{room.roomType}</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+            <h3 style={{ fontSize: '1.75rem', fontWeight: 800, margin: 0, color: 'var(--secondary)' }}>{room.roomType}</h3>
+            {room.roomStatus && (
+              <span style={{
+                fontSize: '0.85rem',
+                fontWeight: 700,
+                padding: '4px 12px',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                backgroundColor: room.roomStatus === 'Available' ? '#ecfdf5' : room.roomStatus === 'Cleaning' ? '#eff6ff' : '#fef2f2',
+                color: room.roomStatus === 'Available' ? '#059669' : room.roomStatus === 'Cleaning' ? '#3b82f6' : '#ef4444'
+              }}>
+                <span style={{
+                  width: '8px', 
+                  height: '8px', 
+                  borderRadius: '50%', 
+                  backgroundColor: room.roomStatus === 'Available' ? '#10b981' : room.roomStatus === 'Cleaning' ? '#3b82f6' : '#ef4444'
+                }} />
+                {room.roomStatus}
+              </span>
+            )}
+          </div>
           <div style={{ display: 'flex', gap: '1.5rem', color: 'var(--text-light)', marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <User size={18} color="var(--primary)" />
@@ -59,7 +82,7 @@ const RoomCard = ({ room, onSelect, loading }) => {
           </div>
           <button 
             onClick={() => onSelect(room)}
-            disabled={loading}
+            disabled={loading || (room.roomStatus && room.roomStatus !== 'Available')}
             className="btn-primary" 
             style={{ 
               padding: '1rem 3rem', 
@@ -70,7 +93,7 @@ const RoomCard = ({ room, onSelect, loading }) => {
               maxWidth: '240px'
             }}
           >
-            {loading ? 'Securing Room...' : 'Select Room'}
+            {room.roomStatus && room.roomStatus !== 'Available' ? 'Unavailable' : loading ? 'Securing Room...' : 'Select Room'}
           </button>
         </div>
       </motion.div>

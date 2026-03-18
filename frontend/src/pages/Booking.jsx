@@ -22,6 +22,10 @@ const Booking = () => {
     selectedExtras: []
   });
 
+  const [promotions, setPromotions] = useState([]);
+  const [discount, setDiscount] = useState(0);
+  const [couponCode, setCouponCode] = useState('');
+
   useEffect(() => {
     if (!user) {
       navigate('/login');
@@ -30,8 +34,20 @@ const Booking = () => {
 
     const fetchData = async () => {
       try {
-        const res = await api.get(`/hotels/${hotelId}`);
-        setData(res.data);
+        const [hotelRes, promoRes] = await Promise.all([
+          api.get(`/hotels/${hotelId}`),
+          api.get(`/promotions/hotel/${hotelId}`)
+        ]);
+        setData(hotelRes.data);
+        
+        const activePromos = promoRes.data.promotions || [];
+        setPromotions(activePromos);
+        
+        // Auto apply best offer
+        if (activePromos.length > 0) {
+           const bestOffer = [...activePromos].sort((a,b) => b.discountPercentage - a.discountPercentage)[0];
+           setDiscount(bestOffer.discountPercentage);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -68,7 +84,8 @@ const Booking = () => {
   const extrasTotal = formData.selectedExtras.reduce((acc, curr) => acc + curr.price, 0);
   const roomBaseTotal = calculateRoomTotal();
   const serviceFee = Math.round(roomBaseTotal * 0.1);
-  const totalPrice = roomBaseTotal + extrasTotal + serviceFee;
+  const originalTotalPrice = roomBaseTotal + extrasTotal + serviceFee;
+  const totalPrice = discount > 0 ? Math.round(originalTotalPrice * (1 - discount/100)) : originalTotalPrice;
 
   const toggleExtra = (extra) => {
     const isSelected = formData.selectedExtras.find(s => s.name === extra.name);
@@ -103,6 +120,17 @@ const Booking = () => {
       alert(err.response?.data?.message || 'Booking failed');
     } finally {
       setBookingLoading(false);
+    }
+  };
+
+  const applyCoupon = () => {
+    if (!couponCode) return;
+    const couponPromo = promotions.find(p => p.couponCode?.toLowerCase() === couponCode.toLowerCase());
+    if (couponPromo) {
+      setDiscount(couponPromo.discountPercentage);
+      alert(`Coupon applied! ${couponPromo.discountPercentage}% OFF`);
+    } else {
+      alert('Invalid or expired coupon code');
     }
   };
 
@@ -173,9 +201,14 @@ const Booking = () => {
             room={room} 
             nights={nights} 
             totalPrice={totalPrice} 
+            originalTotalPrice={originalTotalPrice}
+            discount={discount}
             selectedExtras={formData.selectedExtras}
             onConfirm={handleConfirm} 
             loading={bookingLoading} 
+            couponCode={couponCode}
+            setCouponCode={setCouponCode}
+            applyCoupon={applyCoupon}
           />
         </aside>
       </div>

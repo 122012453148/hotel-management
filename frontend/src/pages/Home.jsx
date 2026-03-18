@@ -7,6 +7,7 @@ import HotelCard from '../components/HotelCard';
 import RecommendedHotels from '../components/RecommendedHotels';
 import Footer from '../components/Footer';
 import LocationInput from '../components/LocationInput';
+import OffersSection from '../components/OffersSection';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -174,6 +175,9 @@ const Home = () => {
           </button>
         </div>
       </div>
+
+      {/* ===== OFFERS SECTION ===== */}
+      <OffersSection />
 
       {/* ===== ACCOMMODATIONS SECTION ===== */}
       <section className="home-section" style={{ padding: '6rem 0 7rem 0' }}>

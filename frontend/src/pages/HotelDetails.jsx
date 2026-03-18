@@ -9,6 +9,7 @@ import ReviewSection from '../components/ReviewSection';
 import ImageGallery from '../components/ImageGallery';
 import RoomCard from '../components/RoomCard';
 import AmenitiesList from '../components/AmenitiesList';
+import OffersSection from '../components/OffersSection';
 
 const HotelDetails = () => {
   const { id } = useParams();
@@ -239,8 +240,13 @@ const HotelDetails = () => {
             <AmenitiesList amenities={hotel.amenities} />
           </section>
 
+          {/* Offers Section */}
+          <div id="deals" style={{ marginBottom: '5rem' }}>
+             <OffersSection hotelId={id} />
+          </div>
+
           {/* Room Selection Section */}
-          <section id="deals" style={{ marginBottom: '5rem' }}>
+          <section id="rooms" style={{ marginBottom: '5rem' }}>
             <h2 style={{ fontSize: '2.25rem', fontWeight: 800, marginBottom: '2.5rem', color: 'var(--secondary)' }}>Choose Your Room</h2>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {rooms.map((room) => (

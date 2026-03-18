@@ -31,6 +31,7 @@ const ManagerSidebar = ({ activeTab, setActiveTab }) => {
     { id: 'manageRooms', label: 'Manage Rooms', icon: <BedDouble size={20} /> },
     { id: 'housekeeping', label: 'Housekeeping', icon: <ClipboardList size={20} /> },
     { id: 'bookings', label: 'Bookings', icon: <TicketCheck size={20} /> },
+    { id: 'promotions', label: 'Promotions', icon: <TicketCheck size={20} /> },
     { id: 'analytics', label: 'Analytics', icon: <TrendingUp size={20} /> },
     { id: 'reviews', label: 'Reviews', icon: <MessageSquare size={20} /> },
   ];

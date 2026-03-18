@@ -29,6 +29,11 @@ const AdminPanel = () => {
   const [analytics, setAnalytics] = useState(null);
   const [settings, setSettings] = useState({ commissionRate: 10 });
   const [auditLogs, setAuditLogs] = useState([]);
+  const [promotions, setPromotions] = useState([]);
+  const [hotels, setHotels] = useState([]);
+  const [promoFormData, setPromoFormData] = useState({
+    title: '', description: '', discountPercentage: '', validFrom: '', validTo: '', applicableHotels: [], couponCode: ''
+  });
   const [savingSettings, setSavingSettings] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -62,6 +67,14 @@ const AdminPanel = () => {
       } else if (activeTab === 'audit') {
         const { data } = await api.get('/admin/audit-logs');
         setAuditLogs(data);
+      } else if (activeTab === 'promotions') {
+        const [promoRes, hotelsRes] = await Promise.all([
+          api.get('/promotions/my-promotions'),
+          api.get('/admin/stats') // We will use this to just show a global option, or we can fetch all hotels.
+        ]);
+        const allHotels = await api.get('/hotels');
+        setHotels(allHotels.data.hotels || []);
+        setPromotions(promoRes.data.promotions);
       }
     } catch (err) {
       console.error(err);
@@ -109,6 +122,20 @@ const AdminPanel = () => {
       alert('Failed to update settings');
     } finally {
       setSavingSettings(false);
+    }
+  };
+
+  const handleAddPromotion = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await api.post('/promotions', promoFormData);
+      alert('Global Promotion Created successfully!');
+      setPromotions([data.promotion, ...promotions]);
+      setPromoFormData({
+        title: '', description: '', discountPercentage: '', validFrom: '', validTo: '', applicableHotels: [], couponCode: ''
+      });
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to create promotion');
     }
   };
 
@@ -172,6 +199,7 @@ const AdminPanel = () => {
                  activeTab === 'hotels' ? 'Property Approvals' : 
                  activeTab === 'bookings' ? 'Global Reservations' : 
                  activeTab === 'analytics' ? 'Financial Insights' :
+                 activeTab === 'promotions' ? 'Global Promotions & Offers' :
                  activeTab === 'settings' ? 'Platform Settings' : 'Audit Logs'}
               </h1>
               <p className="admin-header-subtitle" style={{ color: 'var(--text-light)', fontSize: '13px', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Oversee and scale the ecosystem.</p>
@@ -431,6 +459,100 @@ const AdminPanel = () => {
                       </tbody>
                     </table>
                   </div>
+                )}
+
+                {activeTab === 'promotions' && (
+                  <motion.div key="promos" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                    <div className="glass-morphism" style={{ padding: '2.5rem', borderRadius: '32px', marginBottom: '3rem' }}>
+                       <h3 style={{ marginBottom: '2rem' }}>Launch Global Promotion</h3>
+                       <form onSubmit={handleAddPromotion} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                          <div style={{ gridColumn: '1 / -1' }}><label>OFFER TITLE</label><input type="text" value={promoFormData.title} onChange={e => setPromoFormData({...promoFormData, title: e.target.value})} required /></div>
+                          <div style={{ gridColumn: '1 / -1' }}><label>DESCRIPTION</label><textarea value={promoFormData.description} onChange={e => setPromoFormData({...promoFormData, description: e.target.value})} required /></div>
+                          <div><label>DISCOUNT PERCENTAGE</label><input type="number" min="1" max="100" value={promoFormData.discountPercentage} onChange={e => setPromoFormData({...promoFormData, discountPercentage: e.target.value})} required /></div>
+                          <div><label>COUPON CODE (Optional)</label><input type="text" value={promoFormData.couponCode} onChange={e => setPromoFormData({...promoFormData, couponCode: e.target.value})} /></div>
+                          <div><label>VALID FROM</label><input type="date" value={promoFormData.validFrom} min={new Date().toISOString().split('T')[0]} onChange={e => setPromoFormData({...promoFormData, validFrom: e.target.value})} required /></div>
+                          <div><label>VALID UNTIL</label><input type="date" value={promoFormData.validTo} min={promoFormData.validFrom || new Date().toISOString().split('T')[0]} onChange={e => setPromoFormData({...promoFormData, validTo: e.target.value})} required /></div>
+                          <div style={{ gridColumn: '1 / -1' }}>
+                            <label>APPLICABLE HOTELS</label>
+                            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                              <button
+                                type="button"
+                                onClick={() => setPromoFormData({ ...promoFormData, applicableHotels: [] })}
+                                style={{
+                                  padding: '8px 16px', borderRadius: '12px', 
+                                  border: promoFormData.applicableHotels.length === 0 ? '2px solid var(--primary)' : '1px solid #e2e8f0',
+                                  backgroundColor: promoFormData.applicableHotels.length === 0 ? '#f0fdf4' : 'white', 
+                                  fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer'
+                                }}
+                              >
+                                {promoFormData.applicableHotels.length === 0 ? '✓ All Hotels (Global)' : 'All Hotels (Global)'}
+                              </button>
+                              {hotels.map(h => (
+                                <button
+                                  type="button"
+                                  key={h._id}
+                                  onClick={() => {
+                                    const current = promoFormData.applicableHotels;
+                                    if (current.includes(h._id)) {
+                                      setPromoFormData({ ...promoFormData, applicableHotels: current.filter(id => id !== h._id) });
+                                    } else {
+                                      setPromoFormData({ ...promoFormData, applicableHotels: [...current, h._id] });
+                                    }
+                                  }}
+                                  style={{
+                                    padding: '8px 16px', borderRadius: '12px', 
+                                    border: promoFormData.applicableHotels.includes(h._id) ? '2px solid var(--primary)' : '1px solid #e2e8f0',
+                                    backgroundColor: promoFormData.applicableHotels.includes(h._id) ? '#f0fdf4' : 'white', 
+                                    fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer'
+                                  }}
+                                >
+                                  {h.name} {promoFormData.applicableHotels.includes(h._id) && '✓'}
+                                </button>
+                              ))}
+                            </div>
+                            <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem' }}>Leave empty to create a global promotion applicable to all hotels.</p>
+                          </div>
+                          
+                          <div style={{ gridColumn: '1 / -1', marginTop: '1rem' }}><button type="submit" className="btn-primary" style={{ width: '100%' }}>Launch Promotion</button></div>
+                       </form>
+                    </div>
+
+                    <div className="glass-morphism table-container" style={{ borderRadius: '32px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '0 1rem' }}>
+                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Manage Promotions</h3>
+                    </div>
+                    <table style={{ minWidth: '700px', width: '100%', borderCollapse: 'collapse' }}>
+                      <thead style={{ backgroundColor: '#f9fafb' }}>
+                        <tr>
+                          <th style={{ padding: '1.5rem', textAlign: 'left' }}>OFFER TITLE</th>
+                          <th style={{ padding: '1.5rem', textAlign: 'left' }}>DISCOUNT</th>
+                          <th style={{ padding: '1.5rem', textAlign: 'left' }}>VALID UNTIL</th>
+                          <th style={{ padding: '1.5rem', textAlign: 'left' }}>STATUS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {promotions.map(promo => (
+                          <tr key={promo._id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                            <td style={{ padding: '1.5rem' }}>
+                               <p style={{ fontWeight: 700 }}>{promo.title}</p>
+                               <p style={{ fontSize: '0.85rem', color: '#9ca3af' }}>{promo.description}</p>
+                            </td>
+                            <td style={{ padding: '1.5rem', fontWeight: 800, color: '#10b981' }}>{promo.discountPercentage}% OFF</td>
+                            <td style={{ padding: '1.5rem', color: '#64748b' }}>{new Date(promo.validTo).toLocaleDateString()}</td>
+                            <td style={{ padding: '1.5rem' }}>
+                               <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '4px 8px', borderRadius: '6px', backgroundColor: promo.isActive ? '#ecfdf5' : '#fef2f2', color: promo.isActive ? '#10b981' : '#ef4444' }}>
+                                 {promo.isActive ? 'Active' : 'Inactive'}
+                               </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                      {promotions.length === 0 && (
+                        <div style={{ padding: '4rem', textAlign: 'center', color: '#94a3b8' }}>No promotions active.</div>
+                      )}
+                    </div>
+                  </motion.div>
                 )}
 
                 {activeTab === 'analytics' && analytics && (
