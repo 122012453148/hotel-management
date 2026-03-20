@@ -15,20 +15,30 @@ require('./config/passport');
 // Connect to Database
 connectDB();
 
+// CORS Configuration
+const corsOptions = {
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+        methods: ["GET", "POST"],
+        credentials: true
     }
 });
 
 // Middleware
 app.use(express.json());
 app.use(passport.initialize());
-app.use(cors());
-app.use(helmet());
+app.use(cors(corsOptions));
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" } // Allow cross-origin images/resources
+}));
 app.use(morgan('dev'));
 
 // Socket.io context
