@@ -23,6 +23,7 @@ const corsOptions = {
 };
 
 const app = express();
+app.set('trust proxy', 1); // Trust Render's proxy to handle HTTPS correctly
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
