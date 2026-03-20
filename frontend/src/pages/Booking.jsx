@@ -63,28 +63,51 @@ const Booking = () => {
   const hotel = data.hotel;
   const room = data.rooms.find(r => r._id === roomId);
 
-  const calculateRoomTotal = () => {
-    if (!room) return 0;
-    let total = 0;
+  const calculatePriceBreakdown = () => {
+    if (!room) return { base: 0, weekend: 0, service: 0, platform: 0, gst: 0, total: 0 };
+    
+    let baseTotal = 0;
+    let weekendSurcharge = 0;
     let start = new Date(formData.checkIn);
     let end = new Date(formData.checkOut);
     let nightsCount = Math.ceil((end - start) / (86400000)) || 1;
     
     for (let i = 0; i < nightsCount; i++) {
-      let current = new Date(start);
-      current.setDate(start.getDate() + i);
-      const day = current.getDay();
-      const isWeekend = (day === 5 || day === 6); // Friday & Saturday
-      total += isWeekend ? (room.price * (room.weekendMultiplier || 1.2)) : room.price;
+        let current = new Date(start);
+        current.setDate(start.getDate() + i);
+        const day = current.getDay();
+        const isWeekend = (day === 5 || day === 6);
+        const dailyRate = room.price;
+        baseTotal += dailyRate;
+        
+        if (isWeekend) {
+            weekendSurcharge += Math.round(dailyRate * ((room.weekendMultiplier || 1.2) - 1));
+        }
     }
-    return Math.round(total);
+
+    const subtotal = baseTotal + weekendSurcharge + extrasTotal;
+    const serviceFee = Math.round(subtotal * 0.05); // Reduced to 5% for better transparency
+    const platformFee = Math.round(subtotal * 0.02); // 2% platform fee
+    const gstAmount = Math.round((subtotal + serviceFee + platformFee) * 0.12); // 12% GST
+    
+    const finalTotal = subtotal + serviceFee + platformFee + gstAmount;
+
+    return {
+        base: baseTotal,
+        weekend: weekendSurcharge,
+        extras: extrasTotal,
+        service: serviceFee,
+        platform: platformFee,
+        gst: gstAmount,
+        total: finalTotal
+    };
   };
 
   const nights = Math.ceil((new Date(formData.checkOut) - new Date(formData.checkIn)) / (1000 * 60 * 60 * 24)) || 1;
   const extrasTotal = formData.selectedExtras.reduce((acc, curr) => acc + curr.price, 0);
-  const roomBaseTotal = calculateRoomTotal();
-  const serviceFee = Math.round(roomBaseTotal * 0.1);
-  const originalTotalPrice = roomBaseTotal + extrasTotal + serviceFee;
+  
+  const priceBreakdown = calculatePriceBreakdown();
+  const originalTotalPrice = priceBreakdown.total;
   const totalPrice = discount > 0 ? Math.round(originalTotalPrice * (1 - discount/100)) : originalTotalPrice;
 
   const toggleExtra = (extra) => {
@@ -202,6 +225,7 @@ const Booking = () => {
             nights={nights} 
             totalPrice={totalPrice} 
             originalTotalPrice={originalTotalPrice}
+            priceBreakdown={priceBreakdown}
             discount={discount}
             selectedExtras={formData.selectedExtras}
             onConfirm={handleConfirm} 

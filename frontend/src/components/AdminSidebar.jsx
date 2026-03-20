@@ -10,7 +10,9 @@ import {
   Home,
   ArrowLeft,
   Settings,
+  IndianRupee,
   ShieldCheck,
+  MessageSquareQuote,
   Menu,
   X
 } from 'lucide-react';
@@ -28,6 +30,8 @@ const AdminSidebar = ({ activeTab, setActiveTab }) => {
     { id: 'users', label: 'Users', icon: <Users size={20} /> },
     { id: 'hotels', label: 'Hotels', icon: <Building2 size={20} /> },
     { id: 'bookings', label: 'Bookings', icon: <TicketCheck size={20} /> },
+    { id: 'payments', label: 'Payments', icon: <IndianRupee size={20} /> },
+    { id: 'reviews', label: 'Guest Reviews', icon: <MessageSquareQuote size={20} /> },
     { id: 'promotions', label: 'Promotions', icon: <TicketCheck size={20} /> },
     { id: 'analytics', label: 'Analytics', icon: <BarChart3 size={20} /> },
     { id: 'settings', label: 'Settings', icon: <Settings size={20} /> },

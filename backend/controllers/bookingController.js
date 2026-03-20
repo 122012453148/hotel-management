@@ -1,6 +1,7 @@
 const Booking = require('../models/Booking');
 const Room = require('../models/Room');
 const Hotel = require('../models/Hotel');
+const User = require('../models/User');
 const PDFDocument = require('pdfkit');
 const sendNotification = require('../utils/notificationUtil');
 
@@ -85,13 +86,20 @@ exports.updatePaymentStatus = async (req, res) => {
         }
 
         // Send Notification to the customer
+        // Send Notification to the customer
         await sendNotification(io, {
             userId: req.user._id,
             userEmail: req.user.email,
             title: 'Payment Successful! ✅',
-            message: `Your payment was received. Your booking is pending manager approval!`,
+            message: `Your payment for ${hotel ? hotel.name : 'your booking'} has been successfully received. Your stay is now pending manager approval.`,
             type: 'payment',
-            link: '/dashboard'
+            link: '/dashboard',
+            payload: {
+                'Hotel': hotel ? hotel.name : 'Royal Hotel',
+                'Status': 'Payment Confirmed',
+                'Amount': `₹${booking.totalPrice}`,
+                'Transaction ID': booking._id.toString().toUpperCase().slice(-8)
+            }
         });
 
         // Notify ONLY the specific manager who owns this hotel
@@ -226,15 +234,26 @@ exports.updateBookingStatus = async (req, res) => {
            }
         }
 
-        // Send Notification
+        // Send Notification to the customer
         const io = req.app.get('socketio');
+        const customer = await User.findById(booking.user);
+        
         await sendNotification(io, {
             userId: booking.user,
-            userEmail: req.user.email,
-            title: `Booking Update: ${status}`,
-            message: `Your booking at ${booking.hotel.name} is now ${status}.`,
+            userEmail: customer ? customer.email : '',
+            title: status === 'Confirmed' ? 'Booking Confirmed! 🎊' : `Booking Update: ${status}`,
+            message: status === 'Confirmed' 
+                ? `Great news! Your stay at ${booking.hotel.name} has been officially confirmed by the manager. We look forward to welcoming you!`
+                : `Your booking at ${booking.hotel.name} is now ${status}.`,
             type: status === 'Cancelled' ? 'cancellation' : 'booking',
-            link: '/dashboard'
+            link: '/dashboard',
+            payload: status === 'Confirmed' ? {
+                'Hotel': booking.hotel.name,
+                'Check-in': new Date(booking.checkIn).toLocaleDateString(),
+                'Check-out': new Date(booking.checkOut).toLocaleDateString(),
+                'Total Price': `₹${booking.totalPrice}`,
+                'Status': 'Confirmed'
+            } : null
         });
 
         res.json(booking);

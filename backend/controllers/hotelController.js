@@ -59,8 +59,8 @@ exports.getManagerHotels = async (req, res) => {
 exports.getHotels = async (req, res) => {
     const { location, rating, minPrice, maxPrice, amenities, checkIn, checkOut } = req.query;
 
-    // Always start with the approval gate — only show approved hotels to customers
-    let query = { isApproved: true };
+    // Always start with the approval gate — only show approved and non-suspended hotels to customers
+    let query = { isApproved: true, isSuspended: false };
 
     if (location && location.trim() !== '') {
         // Extract only the city name (first keyword before the comma)
@@ -69,7 +69,7 @@ exports.getHotels = async (req, res) => {
         // Wrap with $and so isApproved:true is NEVER overridden by $or
         query = {
             $and: [
-                { isApproved: true },
+                { isApproved: true, isSuspended: false },
                 {
                     $or: [
                         { location: { $regex: cityKeyword, $options: 'i' } },
@@ -95,9 +95,7 @@ exports.getHotels = async (req, res) => {
     }
 
     try {
-        console.log('Hotel Query:', JSON.stringify(query));
         let hotels = await Hotel.find(query);
-        console.log(`Found ${hotels.length} approved hotels matching query.`);
 
         // Filter by price and availability if requested
         // This requires checking rooms for each hotel
@@ -152,7 +150,7 @@ exports.getHotels = async (req, res) => {
 // @route GET /api/hotels/locations
 exports.getLocations = async (req, res) => {
     try {
-        const locations = await Hotel.distinct('location', { isApproved: true });
+        const locations = await Hotel.distinct('location', { isApproved: true, isSuspended: false });
         res.json(locations);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -164,8 +162,8 @@ exports.getLocations = async (req, res) => {
 // @access Public
 exports.getHotelById = async (req, res) => {
     try {
-        const hotel = await Hotel.findById(req.params.id).populate('manager', 'name email');
-        if (!hotel) return res.status(404).json({ message: 'Hotel not found' });
+        const hotel = await Hotel.findOne({ _id: req.params.id, isSuspended: false }).populate('manager', 'name email');
+        if (!hotel) return res.status(404).json({ message: 'Hotel not found or is currently suspended' });
 
         const rooms = await Room.find({ hotel: req.params.id });
         res.json({ hotel, rooms });
@@ -224,7 +222,7 @@ exports.getRecommendations = async (req, res) => {
 
         // 1. Get Top Rated & Popular Hotels
         const popularHotels = await Hotel.aggregate([
-            { $match: { isApproved: true } },
+            { $match: { isApproved: true, isSuspended: false } },
             {
                 $lookup: {
                     from: 'bookings',
@@ -263,6 +261,7 @@ exports.getRecommendations = async (req, res) => {
                 personalized = await Hotel.find({
                     location: { $in: locations },
                     isApproved: true,
+                    isSuspended: false,
                     _id: { $nin: bookedHotelIds }
                 })
                 .sort({ rating: -1 })

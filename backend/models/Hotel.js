@@ -21,7 +21,8 @@ const hotelSchema = new mongoose.Schema({
     },
     rating: { type: Number, default: 0 },
     numReviews: { type: Number, default: 0 },
-    isApproved: { type: Boolean, default: false }
+    isApproved: { type: Boolean, default: false },
+    isSuspended: { type: Boolean, default: false }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Hotel', hotelSchema);

@@ -273,5 +273,6 @@ exports.oauthSuccess = (req, res) => {
     }));
     
     // Redirect to frontend with token info
-    res.redirect(`${process.env.FRONTEND_URL}/login?user=${userInfo}`);
+    const redirectPath = req.user.role === 'manager' ? '/manager-login' : '/login';
+    res.redirect(`${process.env.FRONTEND_URL}${redirectPath}?user=${userInfo}`);
 };

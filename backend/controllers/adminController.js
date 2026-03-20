@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Hotel = require('../models/Hotel');
 const Booking = require('../models/Booking');
+const Review = require('../models/Review');
 
 const AuditLog = require('../models/AuditLog');
 const PlatformSettings = require('../models/PlatformSettings');
@@ -54,7 +55,80 @@ exports.getStats = async (req, res) => {
 exports.getPendingHotels = async (req, res) => {
     try {
         const hotels = await Hotel.find({ isApproved: false }).populate('manager', 'name email');
+        console.log('Found Pending Hotels:', hotels.length);
         res.json(hotels);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc Get all hotels for admin
+exports.getAllHotels = async (req, res) => {
+    try {
+        const hotels = await Hotel.find({}).populate('manager', 'name email');
+        console.log('Found Total Hotels for Admin:', hotels.length);
+        res.json(hotels);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc Suspend or Unsuspend hotel
+exports.toggleSuspendHotel = async (req, res) => {
+    try {
+        const hotel = await Hotel.findById(req.params.id);
+        if (!hotel) return res.status(404).json({ message: 'Hotel not found' });
+
+        hotel.isSuspended = !hotel.isSuspended;
+        await hotel.save();
+
+        await createAuditLog(
+            req.user._id,
+            hotel.isSuspended ? 'HOTEL_SUSPENDED' : 'HOTEL_UNSUSPENDED',
+            `Admin ${hotel.isSuspended ? 'suspended' : 'unsuspended'} hotel: ${hotel.name}`,
+            hotel._id,
+            'Hotel'
+        );
+
+        res.json({ message: `Hotel ${hotel.isSuspended ? 'suspended' : 'unsuspended'} successfully`, isSuspended: hotel.isSuspended });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc Get all payments for admin
+exports.getAllPayments = async (req, res) => {
+    try {
+        const bookings = await Booking.find({ paymentStatus: 'Paid' })
+            .populate('user', 'name email')
+            .populate('hotel', 'name manager')
+            .populate({
+                path: 'hotel',
+                populate: { path: 'manager', select: 'name email' }
+            })
+            .sort('-createdAt');
+
+        const settings = await PlatformSettings.findOne() || { commissionRate: 10 };
+        const commissionRate = settings.commissionRate / 100;
+
+        const payments = bookings.map(b => {
+            const customerPaid = b.totalPrice;
+            const platformCommission = customerPaid * commissionRate;
+            const hotelReceived = customerPaid - platformCommission;
+
+            return {
+                _id: b._id,
+                customer: b.user,
+                hotel: b.hotel,
+                amount: customerPaid,
+                hotelEarnings: hotelReceived,
+                platformEarnings: platformCommission,
+                date: b.createdAt,
+                paymentId: b.paymentId
+            };
+        });
+
+        res.json(payments);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -231,6 +305,41 @@ exports.updateSettings = async (req, res) => {
         );
 
         res.json(settings);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc Get all guest reviews for admin
+exports.getAllReviews = async (req, res) => {
+    try {
+        const reviews = await Review.find()
+            .populate('user', 'name email')
+            .populate('hotel', 'name')
+            .sort('-createdAt');
+        res.json(reviews);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc Delete review (Admin cleanup)
+exports.deleteReview = async (req, res) => {
+    try {
+        const review = await Review.findById(req.params.id);
+        if (!review) return res.status(404).json({ message: 'Review not found' });
+        
+        await review.deleteOne();
+        
+        await createAuditLog(
+            req.user._id,
+            'REVIEW_DELETED',
+            `Admin deleted review by user ${review.user} on hotel ${review.hotel}`,
+            review._id,
+            'Review'
+        );
+
+        res.json({ message: 'Review removed by administrator' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

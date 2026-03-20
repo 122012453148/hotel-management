@@ -16,6 +16,11 @@ const ManagerLogin = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    const errorParam = params.get('error');
+    if (errorParam) {
+      setError(decodeURIComponent(errorParam));
+    }
+
     const userParam = params.get('user');
     if (userParam) {
       try {
@@ -46,7 +51,7 @@ const ManagerLogin = () => {
   };
 
   const handleOAuthLogin = (provider) => {
-    window.location.href = `http://localhost:5000/api/auth/${provider}`;
+    window.location.href = `http://localhost:5000/api/auth/${provider}?role=manager`;
   };
 
   return (
@@ -113,7 +118,7 @@ const ManagerLogin = () => {
         </div>
 
         <p style={{ textAlign: 'center', marginTop: '2.5rem', color: 'var(--text-light)', fontWeight: 500 }}>
-          New to Royal Hotel? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>Create Account</Link>
+          New to Royal Hotel? <Link to="/register?role=manager" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>Create Account</Link>
         </p>
       </motion.div>
     </div>

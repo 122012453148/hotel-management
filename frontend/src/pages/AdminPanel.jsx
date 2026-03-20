@@ -14,7 +14,10 @@ import {
   Clock,
   IndianRupee,
   ShieldCheck,
-  UserCheck
+  UserCheck,
+  MessageSquareQuote,
+  Star,
+  MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AdminSidebar from '../components/AdminSidebar';
@@ -31,6 +34,9 @@ const AdminPanel = () => {
   const [auditLogs, setAuditLogs] = useState([]);
   const [promotions, setPromotions] = useState([]);
   const [hotels, setHotels] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [hotelTab, setHotelTab] = useState('pending'); // 'pending' or 'all'
   const [promoFormData, setPromoFormData] = useState({
     title: '', description: '', discountPercentage: '', validFrom: '', validTo: '', applicableHotels: [], couponCode: ''
   });
@@ -53,8 +59,14 @@ const AdminPanel = () => {
         const { data } = await api.get('/admin/users');
         setUsers(data);
       } else if (activeTab === 'hotels') {
-        const { data } = await api.get('/admin/pending-hotels');
-        setPendingHotels(data);
+        const [pendingRes, allRes] = await Promise.all([
+          api.get('/admin/pending-hotels'),
+          api.get('/admin/hotels')
+        ]);
+        console.log('Pending Hotels Received:', pendingRes.data);
+        console.log('All Hotels Received:', allRes.data);
+        setPendingHotels(pendingRes.data);
+        setHotels(allRes.data);
       } else if (activeTab === 'bookings') {
         const { data } = await api.get('/admin/bookings');
         setBookings(data);
@@ -67,6 +79,12 @@ const AdminPanel = () => {
       } else if (activeTab === 'audit') {
         const { data } = await api.get('/admin/audit-logs');
         setAuditLogs(data);
+      } else if (activeTab === 'payments') {
+        const { data } = await api.get('/admin/payments');
+        setPayments(data);
+      } else if (activeTab === 'reviews') {
+        const { data } = await api.get('/admin/reviews');
+        setReviews(data);
       } else if (activeTab === 'promotions') {
         const [promoRes, hotelsRes] = await Promise.all([
           api.get('/promotions/my-promotions'),
@@ -106,9 +124,33 @@ const AdminPanel = () => {
     try {
       await api.put(`/admin/approve-hotel/${id}`, { status });
       setPendingHotels(pendingHotels.filter(h => h._id !== id));
+      // Refresh all hotels list too
+      const { data } = await api.get('/admin/hotels');
+      setHotels(data);
       alert(`Hotel ${status === 'approve' ? 'approved' : 'rejected'}`);
     } catch (err) {
       alert('Failed to update hotel status');
+    }
+  };
+
+  const handleToggleSuspendHotel = async (id) => {
+    try {
+      const { data } = await api.put(`/admin/hotels/${id}/suspend`);
+      setHotels(hotels.map(h => h._id === id ? { ...h, isSuspended: data.isSuspended } : h));
+      alert(`Hotel ${data.isSuspended ? 'suspended' : 'unsuspended'} successfully`);
+    } catch (err) {
+      alert('Failed to update hotel suspension status');
+    }
+  };
+
+  const handleDeleteReview = async (id) => {
+    if (!window.confirm('Delete this guest review?')) return;
+    try {
+      await api.delete(`/admin/reviews/${id}`);
+      setReviews(reviews.filter(r => r._id !== id));
+      alert('Review deleted');
+    } catch (err) {
+      alert('Failed to delete review');
     }
   };
 
@@ -198,6 +240,8 @@ const AdminPanel = () => {
                  activeTab === 'users' ? 'Community Management' : 
                  activeTab === 'hotels' ? 'Property Approvals' : 
                  activeTab === 'bookings' ? 'Global Reservations' : 
+                 activeTab === 'payments' ? 'Transaction Hub' :
+                 activeTab === 'reviews' ? 'Guest Feedback' :
                  activeTab === 'analytics' ? 'Financial Insights' :
                  activeTab === 'promotions' ? 'Global Promotions & Offers' :
                  activeTab === 'settings' ? 'Platform Settings' : 'Audit Logs'}
@@ -326,108 +370,216 @@ const AdminPanel = () => {
                 )}
 
                 {activeTab === 'hotels' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-                    {pendingHotels.length === 0 ? (
-                      <div className="glass-morphism" style={{ padding: '5rem', textAlign: 'center' }}>
-                        <ShieldCheck size={48} color="var(--success)" style={{ marginBottom: '1rem' }} />
-                        <h3 style={{ fontSize: '1.5rem' }}>All Caught Up!</h3>
-                        <p style={{ color: 'var(--text-light)' }}>No pending hotel approval requests.</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                      <button 
+                        onClick={() => setHotelTab('pending')} 
+                        style={{ 
+                          padding: '12px 24px', borderRadius: '16px', 
+                          backgroundColor: hotelTab === 'pending' ? 'var(--primary)' : 'white',
+                          color: hotelTab === 'pending' ? 'white' : 'var(--text-light)',
+                          fontWeight: 800, border: hotelTab === 'pending' ? 'none' : '2px solid #f1f5f9', cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          boxShadow: hotelTab === 'pending' ? '0 4px 12px rgba(174, 183, 132, 0.3)' : 'none'
+                        }}
+                      >Pending Approvals ({pendingHotels.length})</button>
+                      <button 
+                        onClick={() => setHotelTab('all')} 
+                        style={{ 
+                          padding: '12px 24px', borderRadius: '16px', 
+                          backgroundColor: hotelTab === 'all' ? 'var(--primary)' : 'white',
+                          color: hotelTab === 'all' ? 'white' : 'var(--text-light)',
+                          fontWeight: 800, border: hotelTab === 'all' ? 'none' : '2px solid #f1f5f9', cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          boxShadow: hotelTab === 'all' ? '0 4px 12px rgba(174, 183, 132, 0.3)' : 'none'
+                        }}
+                      >All Hotels ({hotels.length})</button>
+                    </div>
+
+                    {hotelTab === 'pending' ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                        {pendingHotels.length === 0 ? (
+                          <div className="glass-morphism" style={{ padding: '5rem', textAlign: 'center' }}>
+                            <ShieldCheck size={48} color="var(--success)" style={{ marginBottom: '1rem' }} />
+                            <h3 style={{ fontSize: '1.5rem' }}>All Caught Up!</h3>
+                            <p style={{ color: 'var(--text-light)' }}>No pending hotel approval requests.</p>
+                          </div>
+                        ) : (
+                          pendingHotels.map(h => (
+                            <motion.div
+                              key={h._id}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="glass-morphism"
+                              style={{ borderRadius: '32px', overflow: 'hidden', border: '1px solid #f1f5f9' }}
+                            >
+                              {/* Image Strip */}
+                              <div style={{ display: 'flex', gap: '4px', height: '220px' }}>
+                                {(h.images?.length > 0 ? h.images.slice(0, 3) : ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=600']).map((img, i) => (
+                                  <img key={i} src={img} alt={`Hotel ${i + 1}`} style={{ flex: i === 0 ? 2 : 1, height: '100%', objectFit: 'cover', display: 'block' }} />
+                                ))}
+                              </div>
+
+                              {/* Details Body */}
+                              <div style={{ padding: '2.5rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+                                  <div>
+                                    <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.4rem' }}>{h.name}</h3>
+                                    <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                                      {h.city && <span style={{ fontSize: '0.9rem', color: '#475569', fontWeight: 600 }}>🏙️ {h.city}</span>}
+                                      {h.location && <span style={{ fontSize: '0.9rem', color: '#64748b' }}>📍 {h.location}</span>}
+                                    </div>
+                                  </div>
+                                  <span style={{ padding: '0.5rem 1.25rem', borderRadius: '12px', backgroundColor: '#fffbeb', color: '#d97706', fontWeight: 700, fontSize: '0.85rem', border: '1px solid #fde68a' }}>⏳ Awaiting Approval</span>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+                                  <div style={{ gridColumn: '1 / -1', backgroundColor: '#f8fafc', borderRadius: '20px', padding: '1.5rem' }}>
+                                    <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Description</p>
+                                    <p style={{ color: '#334155', lineHeight: '1.7', fontSize: '0.95rem' }}>{h.description || 'No description provided.'}</p>
+                                  </div>
+                                  <div style={{ backgroundColor: '#f0f9ff', borderRadius: '20px', padding: '1.5rem', borderLeft: '4px solid #38bdf8' }}>
+                                    <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0284c7', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Manager</p>
+                                    <p style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a' }}>{h.manager?.name || 'Unknown'}</p>
+                                    <p style={{ fontSize: '0.9rem', color: '#475569' }}>📧 {h.manager?.email || 'N/A'}</p>
+                                  </div>
+                                  <div style={{ backgroundColor: '#f8fafc', borderRadius: '20px', padding: '1.5rem' }}>
+                                    <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Amenities</p>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                      {h.amenities?.slice(0, 5).map(a => (
+                                        <span key={a} style={{ padding: '4px 12px', borderRadius: '8px', backgroundColor: '#e0f2fe', color: '#0369a1', fontSize: '0.8rem', fontWeight: 600 }}>{a}</span>
+                                      ))}
+                                      {h.amenities?.length > 5 && <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>+{h.amenities.length - 5} more</span>}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid #f1f5f9', paddingTop: '2rem' }}>
+                                  <button onClick={() => handleHotelApproval(h._id, 'approve')} className="btn-primary" style={{ flex: 1, padding: '1rem', borderRadius: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}><CheckCircle size={20} /> Approve</button>
+                                  <button onClick={() => handleHotelApproval(h._id, 'reject')} style={{ flex: 1, padding: '1rem', borderRadius: '18px', backgroundColor: '#fef2f2', color: '#ef4444', border: '2px solid #fecaca', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer' }}><XCircle size={20} /> Reject</button>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))
+                        )}
                       </div>
                     ) : (
-                      pendingHotels.map(h => (
-                        <motion.div
-                          key={h._id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="glass-morphism"
-                          style={{ borderRadius: '32px', overflow: 'hidden', border: '1px solid #f1f5f9' }}
-                        >
-                          {/* Image Strip */}
-                          <div style={{ display: 'flex', gap: '4px', height: '220px' }}>
-                            {(h.images?.length > 0 ? h.images.slice(0, 3) : ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=600']).map((img, i) => (
-                              <img
-                                key={i}
-                                src={img}
-                                alt={`Hotel ${i + 1}`}
-                                style={{
-                                  flex: i === 0 ? 2 : 1,
-                                  height: '100%',
-                                  objectFit: 'cover',
-                                  display: 'block'
-                                }}
-                              />
+                      <div className="glass-morphism table-container" style={{ borderRadius: '32px' }}>
+                        <table style={{ minWidth: '800px', width: '100%', borderCollapse: 'collapse' }}>
+                          <thead style={{ backgroundColor: '#f9fafb' }}>
+                            <tr>
+                              <th style={{ padding: '1.5rem', textAlign: 'left' }}>HOTEL NAME</th>
+                              <th style={{ padding: '1.5rem', textAlign: 'left' }}>LOCATION</th>
+                              <th style={{ padding: '1.5rem', textAlign: 'left' }}>MANAGER</th>
+                              <th style={{ padding: '1.5rem', textAlign: 'left' }}>STATUS</th>
+                              <th style={{ padding: '1.5rem', textAlign: 'right' }}>ACTIONS</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {hotels.map(h => (
+                              <tr key={h._id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                                <td style={{ padding: '1.5rem', fontWeight: 800, color: 'var(--secondary)' }}>{h.name}</td>
+                                <td style={{ padding: '1.5rem', color: '#64748b', fontWeight: 600 }}>{h.city || 'N/A'}</td>
+                                <td style={{ padding: '1.5rem' }}>
+                                  <p style={{ fontWeight: 700 }}>{h.manager?.name || 'Unknown'}</p>
+                                  <p style={{ fontSize: '11px', color: '#94a3b8' }}>{h.manager?.email || 'N/A'}</p>
+                                </td>
+                                <td style={{ padding: '1.5rem' }}>
+                                  {h.isSuspended ? (
+                                    <span style={{ padding: '6px 12px', borderRadius: '8px', backgroundColor: '#fef2f2', color: '#ef4444', fontSize: '0.75rem', fontWeight: 800 }}>SUSPENDED</span>
+                                  ) : h.isApproved ? (
+                                    <span style={{ padding: '6px 12px', borderRadius: '8px', backgroundColor: '#ecfdf5', color: '#10b981', fontSize: '0.75rem', fontWeight: 800 }}>ACTIVE</span>
+                                  ) : (
+                                    <span style={{ padding: '6px 12px', borderRadius: '8px', backgroundColor: '#fffbeb', color: '#d97706', fontSize: '0.75rem', fontWeight: 800 }}>PENDING</span>
+                                  )}
+                                </td>
+                                <td style={{ padding: '1.5rem', textAlign: 'right' }}>
+                                  <button 
+                                    onClick={() => handleToggleSuspendHotel(h._id)}
+                                    style={{ 
+                                      padding: '10px 18px', borderRadius: '14px', 
+                                      backgroundColor: h.isSuspended ? '#f0fdf4' : '#fff1f2', 
+                                      color: h.isSuspended ? '#16a34a' : '#e11d48',
+                                      fontWeight: 800, border: 'none', cursor: 'pointer',
+                                      fontSize: '0.8rem',
+                                      transition: 'all 0.2s'
+                                    }}
+                                  >
+                                    {h.isSuspended ? '✓ Reactivate' : '⚠ Suspend'}
+                                  </button>
+                                </td>
+                              </tr>
                             ))}
-                          </div>
-
-                          {/* Details Body */}
-                          <div style={{ padding: '2.5rem' }}>
-                            {/* Header Row */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-                              <div>
-                                <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.4rem' }}>{h.name}</h3>
-                                <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-                                  {h.city && <span style={{ fontSize: '0.9rem', color: '#475569', fontWeight: 600 }}>🏙️ {h.city}</span>}
-                                  {h.location && <span style={{ fontSize: '0.9rem', color: '#64748b' }}>📍 {h.location}</span>}
-                                  {h.address && <span style={{ fontSize: '0.9rem', color: '#64748b' }}>🏠 {h.address}</span>}
-                                  {h.zipCode && <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>📮 {h.zipCode}</span>}
-                                </div>
-                              </div>
-                              <span style={{ padding: '0.5rem 1.25rem', borderRadius: '12px', backgroundColor: '#fffbeb', color: '#d97706', fontWeight: 700, fontSize: '0.85rem', border: '1px solid #fde68a', whiteSpace: 'nowrap' }}>
-                                ⏳ Awaiting Approval
-                              </span>
-                            </div>
-
-                            {/* Info Grid */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
-                              {/* Description */}
-                              <div style={{ gridColumn: '1 / -1', backgroundColor: '#f8fafc', borderRadius: '20px', padding: '1.5rem' }}>
-                                <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Description</p>
-                                <p style={{ color: '#334155', lineHeight: '1.7', fontSize: '0.95rem' }}>{h.description || 'No description provided.'}</p>
-                              </div>
-
-                              {/* Manager */}
-                              <div style={{ backgroundColor: '#f0f9ff', borderRadius: '20px', padding: '1.5rem', borderLeft: '4px solid #38bdf8' }}>
-                                <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0284c7', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Manager</p>
-                                <p style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a', marginBottom: '0.25rem' }}>{h.manager?.name}</p>
-                                <p style={{ fontSize: '0.9rem', color: '#475569' }}>📧 {h.manager?.email}</p>
-                              </div>
-
-                              {/* Amenities */}
-                              <div style={{ backgroundColor: '#f8fafc', borderRadius: '20px', padding: '1.5rem' }}>
-                                <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Amenities</p>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                  {h.amenities?.length > 0
-                                    ? h.amenities.map(a => (
-                                        <span key={a} style={{ padding: '4px 12px', borderRadius: '8px', backgroundColor: '#e0f2fe', color: '#0369a1', fontSize: '0.8rem', fontWeight: 600 }}>{a}</span>
-                                      ))
-                                    : <span style={{ color: '#9ca3af', fontSize: '0.9rem' }}>No amenities listed</span>
-                                  }
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid #f1f5f9', paddingTop: '2rem' }}>
-                              <button
-                                onClick={() => handleHotelApproval(h._id, 'approve')}
-                                className="btn-primary"
-                                style={{ flex: 1, padding: '1rem', borderRadius: '18px', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-                              >
-                                <CheckCircle size={20} /> Approve Property
-                              </button>
-                              <button
-                                onClick={() => handleHotelApproval(h._id, 'reject')}
-                                style={{ flex: 1, padding: '1rem', borderRadius: '18px', backgroundColor: '#fef2f2', color: '#ef4444', border: '2px solid #fecaca', fontWeight: 700, fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer' }}
-                              >
-                                <XCircle size={20} /> Reject
-                              </button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      ))
+                          </tbody>
+                        </table>
+                        {hotels.length === 0 && <div style={{ padding: '4rem', textAlign: 'center', color: '#94a3b8' }}>No hotels found.</div>}
+                      </div>
                     )}
                   </div>
                 )}
+
+                {activeTab === 'reviews' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem' }}>
+                      {reviews.length === 0 ? (
+                        <div className="glass-morphism" style={{ gridColumn: '1 / -1', padding: '5rem', textAlign: 'center' }}>
+                          <MessageSquare size={48} color="#94a3b8" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+                          <h3 style={{ fontSize: '1.25rem', color: '#64748b' }}>No Guest Reviews Yet</h3>
+                        </div>
+                      ) : (
+                        reviews.map(r => (
+                          <motion.div 
+                            key={r._id} 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="glass-morphism" 
+                            style={{ padding: '2rem', borderRadius: '32px', position: 'relative', border: '1px solid #f1f5f9' }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '14px', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 900, fontSize: '1.2rem' }}>
+                                  {r.user?.name?.[0].toUpperCase() || '?'}
+                                </div>
+                                <div>
+                                  <h4 style={{ fontWeight: 800, color: 'var(--secondary)' }}>{r.user?.name || 'Anonymous'}</h4>
+                                  <p style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>{new Date(r.createdAt).toLocaleDateString()}</p>
+                                </div>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ display: 'flex', gap: '2px', color: '#f59e0b', marginBottom: '4px' }}>
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star key={i} size={14} fill={i < r.rating ? '#f59e0b' : 'transparent'} strokeWidth={2.5} />
+                                  ))}
+                                </div>
+                                <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--primary)' }}>{r.hotel?.name}</span>
+                              </div>
+                            </div>
+
+                            <p style={{ color: '#475569', lineHeight: 1.7, fontSize: '0.95rem', fontStyle: 'italic', marginBottom: '2rem' }}>
+                              "{r.comment}"
+                            </p>
+
+                            <button
+                              onClick={() => handleDeleteReview(r._id)}
+                              style={{ 
+                                width: '100%', padding: '12px', borderRadius: '16px', 
+                                backgroundColor: '#fef2f2', color: '#ef4444', 
+                                border: 'none', cursor: 'pointer', fontWeight: 800,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                transition: 'all 0.2s'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fee2e2'}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fef2f2'}
+                            >
+                              <Trash2 size={16} /> Delete Review
+                            </button>
+                          </motion.div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+
 
                 {activeTab === 'bookings' && (
                   <div className="glass-morphism table-container" style={{ borderRadius: '32px' }}>
@@ -458,6 +610,49 @@ const AdminPanel = () => {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                )}
+
+                {activeTab === 'payments' && (
+                  <div className="glass-morphism table-container" style={{ borderRadius: '32px' }}>
+                    <table style={{ minWidth: '800px', width: '100%', borderCollapse: 'collapse' }}>
+                      <thead style={{ backgroundColor: '#f9fafb' }}>
+                        <tr>
+                          <th style={{ padding: '1.5rem', textAlign: 'left' }}>DATE</th>
+                          <th style={{ padding: '1.5rem', textAlign: 'left' }}>CUSTOMER / HOTEL</th>
+                          <th style={{ padding: '1.5rem', textAlign: 'left' }}>TOTAL PAID</th>
+                          <th style={{ padding: '1.5rem', textAlign: 'left' }}>HOTEL EARNINGS</th>
+                          <th style={{ padding: '1.5rem', textAlign: 'left' }}>PLATFORM REVENUE</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {payments.map(p => (
+                          <tr key={p._id} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                            <td style={{ padding: '1.5rem', fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
+                               {new Date(p.date).toLocaleDateString()}
+                            </td>
+                            <td style={{ padding: '1.5rem' }}>
+                               <p style={{ fontWeight: 800, color: 'var(--secondary)' }}>{p.customer?.name}</p>
+                               <p style={{ fontSize: '11px', color: '#94a3b8' }}>Sent to {p.hotel?.name}</p>
+                            </td>
+                            <td style={{ padding: '1.5rem' }}>
+                               <h4 style={{ fontWeight: 900, fontSize: '1.1rem' }}>₹{p.amount.toLocaleString()}</h4>
+                            </td>
+                            <td style={{ padding: '1.5rem' }}>
+                               <span style={{ fontWeight: 800, color: '#10b981' }}>₹{p.hotelEarnings.toLocaleString()}</span>
+                            </td>
+                            <td style={{ padding: '1.5rem' }}>
+                               <span style={{ fontWeight: 800, color: '#6366f1' }}>₹{p.platformEarnings.toLocaleString()}</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {payments.length === 0 && (
+                       <div style={{ padding: '5rem', textAlign: 'center' }}>
+                          <p style={{ color: '#94a3b8', fontSize: '1.25rem', fontWeight: 600 }}>No payment transactions found.</p>
+                       </div>
+                    )}
                   </div>
                 )}
 

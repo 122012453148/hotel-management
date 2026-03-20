@@ -46,7 +46,7 @@ const CustomerLogin = () => {
   };
 
   const handleOAuthLogin = (provider) => {
-    window.location.href = `http://localhost:5000/api/auth/${provider}`;
+    window.location.href = `http://localhost:5000/api/auth/${provider}?role=customer`;
   };
 
   return (
@@ -113,7 +113,7 @@ const CustomerLogin = () => {
         </div>
 
         <p style={{ textAlign: 'center', marginTop: '2.5rem', color: 'var(--text-light)', fontWeight: 500 }}>
-          New to Royal Hotel? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>Create Account</Link>
+          New to Royal Hotel? <Link to="/register?role=customer" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>Create Account</Link>
         </p>
       </motion.div>
     </div>

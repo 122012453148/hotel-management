@@ -15,11 +15,12 @@ const sendEmail = async (options) => {
     });
 
     const mailOptions = {
-        from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
+        from: `${process.env.FROM_NAME || 'Royal Hotel'} <${process.env.EMAIL_USER}>`, // Use EMAIL_USER for from to avoid Gmail errors
         to: options.email,
         subject: options.subject,
         text: options.message,
         html: options.html,
+        attachments: options.attachments || [],
     };
 
     try {

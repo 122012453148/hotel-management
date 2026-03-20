@@ -13,6 +13,15 @@ const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const roleParam = params.get('role');
+    if (roleParam && (roleParam === 'customer' || roleParam === 'manager')) {
+      setFormData(prev => ({ ...prev, role: roleParam }));
+      setStep(2);
+    }
+  }, []);
+
   const handleRoleSelect = (role) => {
     setFormData({ ...formData, role });
     setStep(2);
@@ -48,7 +57,7 @@ const Register = () => {
   };
 
   const handleOAuthLogin = (provider) => {
-    window.location.href = `http://localhost:5000/api/auth/${provider}`;
+    window.location.href = `http://localhost:5000/api/auth/${provider}?role=${formData.role || 'customer'}`;
   };
 
   const roleCards = [

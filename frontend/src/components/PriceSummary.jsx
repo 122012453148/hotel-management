@@ -3,6 +3,7 @@ import { ShieldCheck, Info, Tag } from 'lucide-react';
 
 const PriceSummary = ({ 
   room, nights, totalPrice, originalTotalPrice, discount, 
+  priceBreakdown = { base: 0, weekend: 0, service: 0, platform: 0, gst: 0, extras: 0 },
   onConfirm, loading, selectedExtras = [],
   couponCode, setCouponCode, applyCoupon 
 }) => {
@@ -10,26 +11,43 @@ const PriceSummary = ({
     <div className="glass-morphism" style={{ padding: '2.5rem', borderRadius: '32px', position: 'sticky', top: '100px' }}>
       <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', color: 'var(--secondary)' }}>Price Summary</h2>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-light)' }}>
-          <span>{room?.roomType} x {nights} {nights === 1 ? 'night' : 'nights'}</span>
-          <span>₹{room?.price * nights}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-light)', fontSize: '0.95rem' }}>
+          <span>{room?.roomType} Base Rate ({nights} {nights === 1 ? 'night' : 'nights'})</span>
+          <span>₹{priceBreakdown.base}</span>
         </div>
+
+        {priceBreakdown.weekend > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '0.85rem' }}>
+            <span>Weekend Surcharge</span>
+            <span>+ ₹{priceBreakdown.weekend}</span>
+          </div>
+        )}
         
         {selectedExtras.map(extra => (
-          <div key={extra.name} style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-light)' }}>
+          <div key={extra.name} style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-light)', fontSize: '0.95rem' }}>
             <span>{extra.name}</span>
             <span>₹{extra.price}</span>
           </div>
         ))}
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-light)', borderBottom: '1px solid #e5e7eb', paddingBottom: '1.25rem' }}>
-          <span>Service Fee (10%)</span>
-          <span>₹{Math.round((room?.price * nights + selectedExtras.reduce((a,b) => a + b.price, 0)) * 0.1)}</span>
+        <div style={{ marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px dashed #e2e8f0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '0.9rem', marginBottom: '0.6rem' }}>
+                <span>Service Fee (5%)</span>
+                <span>₹{priceBreakdown.service}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '0.9rem', marginBottom: '0.6rem' }}>
+                <span>Platform Fee (2%)</span>
+                <span>₹{priceBreakdown.platform}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#64748b', fontSize: '0.9rem', borderBottom: '1px solid #e5e7eb', paddingBottom: '1rem' }}>
+                <span>GST (12%)</span>
+                <span>₹{priceBreakdown.gst}</span>
+            </div>
         </div>
 
         {discount > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#10b981', fontWeight: 700 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: '#10b981', fontWeight: 700, margin: '1rem 0' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><Tag size={16} /> Offer Applied ({discount}%)</span>
             <span>- ₹{originalTotalPrice - totalPrice}</span>
           </div>
@@ -73,7 +91,7 @@ const PriceSummary = ({
       </button>
 
       <p style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#9ca3af', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
-        <Info size={14} /> You won't be charged yet
+        <Info size={14} /> Final amount includes all taxes
       </p>
     </div>
   );

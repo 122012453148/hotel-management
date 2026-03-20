@@ -8,10 +8,17 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== 'your_googl
   passport.use(new GoogleStrategy({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/api/auth/google/callback"
+      callbackURL: "/api/auth/google/callback",
+      passReqToCallback: true
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (req, accessToken, refreshToken, profile, done) => {
       try {
+        const role = req.query.state || 'customer';
+        console.log('--- OAuth Debug ---');
+        console.log('Provider: Google');
+        console.log('State-derived Role:', role);
+        console.log('Profile Email:', profile.emails[0].value);
+        
         let user = await User.findOne({ googleId: profile.id });
         
         if (!user) {
@@ -25,6 +32,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== 'your_googl
               name: profile.displayName,
               email: profile.emails[0].value,
               googleId: profile.id,
+              role: role,
               isVerified: true
             });
           }
@@ -44,10 +52,12 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_ID !== 'your_githu
   passport.use(new GitHubStrategy({
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: "/api/auth/github/callback"
+      callbackURL: "/api/auth/github/callback",
+      passReqToCallback: true
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (req, accessToken, refreshToken, profile, done) => {
       try {
+        const role = req.query.state || 'customer';
         let user = await User.findOne({ githubId: profile.id });
         
         if (!user) {
@@ -62,6 +72,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_ID !== 'your_githu
               name: profile.displayName || profile.username,
               email: email,
               githubId: profile.id,
+              role: role,
               isVerified: true
             });
           }
