@@ -170,9 +170,9 @@ const ManagerSidebar = ({ activeTab, setActiveTab }) => {
       <div className="mobile-sidebar-toggle" style={{ 
         display: 'none', 
         position: 'fixed', 
-        bottom: '30px', 
-        right: '30px', 
-        zIndex: 2000 
+        top: '20px', 
+        right: '20px', 
+        zIndex: 2005 
       }}>
         <button 
           style={{ 
