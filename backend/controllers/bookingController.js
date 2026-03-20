@@ -72,50 +72,64 @@ exports.updatePaymentStatus = async (req, res) => {
 
         const selectedRoom = booking.room;
         
+        // Mark as paid
         booking.paymentStatus = 'Paid';
         booking.status = 'Pending';
         await booking.save();
 
-        // Remove occupiedRooms increment here, it will be done on manager confirmation
-
-        // Emit real-time update only to the specific hotel manager
-        const io = req.app.get('socketio');
-        const hotel = await Hotel.findById(booking.hotel);
-        if (hotel) {
-            io.to(hotel.manager.toString()).emit('roomBooked', { roomId: booking.room, availability: selectedRoom.totalRooms - selectedRoom.occupiedRooms });
-        }
-
-        // Send Notification to the customer
-        // Send Notification to the customer
-        await sendNotification(io, {
-            userId: req.user._id,
-            userEmail: req.user.email,
-            title: 'Payment Successful! ✅',
-            message: `Your payment for ${hotel ? hotel.name : 'your booking'} has been successfully received. Your stay is now pending manager approval.`,
-            type: 'payment',
-            link: '/dashboard',
-            payload: {
-                'Hotel': hotel ? hotel.name : 'Royal Hotel',
-                'Status': 'Payment Confirmed',
-                'Amount': `₹${booking.totalPrice}`,
-                'Transaction ID': booking._id.toString().toUpperCase().slice(-8)
+        // ⚡ Optional: Notifications (Wrapped in try/catch to ensure payment success doesn't fail due to notification glitches)
+        try {
+            const io = req.app.get('socketio');
+            const hotel = await Hotel.findById(booking.hotel);
+            
+            // 1. Emit real-time inventory update if room exists
+            if (io && booking.room) {
+               const selectedRoom = await Room.findById(booking.room);
+               if (selectedRoom) {
+                   io.to(hotel?.manager?.toString()).emit('roomBooked', { 
+                       roomId: booking.room, 
+                       availability: selectedRoom.totalRooms - selectedRoom.occupiedRooms 
+                   });
+               }
             }
-        });
 
-        // Notify ONLY the specific manager who owns this hotel
-        if (hotel) {
-            await sendNotification(io, {
-                userId: hotel.manager,
-                userEmail: '',
-                title: 'New Booking Request 🔔',
-                message: `A customer has paid for a new booking at ${hotel.name}. Please review and accept or reject it.`,
-                type: 'booking',
-                link: '/manager/dashboard'
-            });
+            // 2. Send Detailed Branded Email to Customer
+            if (req.user && req.user.email) {
+                await sendNotification(io, {
+                    userId: req.user._id,
+                    userEmail: req.user.email,
+                    title: 'Payment Successful! ✅',
+                    message: `Your payment for ${hotel ? hotel.name : 'your booking'} has been successfully received. Your stay is now pending manager approval.`,
+                    type: 'payment',
+                    link: '/dashboard',
+                    payload: {
+                        'Hotel': hotel ? hotel.name : 'Royal Hotel',
+                        'Status': 'Payment Confirmed',
+                        'Amount': `₹${booking.totalPrice}`,
+                        'Transaction ID': booking._id.toString().toUpperCase().slice(-8)
+                    }
+                });
+            }
+
+            // 3. Notify Manager
+            if (hotel && hotel.manager) {
+                await sendNotification(io, {
+                    userId: hotel.manager,
+                    userEmail: '', // Usually don't email manager every time, just in-app notification
+                    title: 'New Booking Request 🔔',
+                    message: `A customer has paid for a new booking at ${hotel.name}. Please review and accept or reject it.`,
+                    type: 'booking',
+                    link: '/manager/dashboard'
+                });
+            }
+        } catch (notifError) {
+            console.error('Non-critical notification error during payment:', notifError);
+            // We ignore this error because the booking was already marked as PAID in the DB above.
         }
 
         res.json({ message: 'Payment updated successfully', booking });
     } catch (error) {
+        console.error('Critical Payment Update Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
