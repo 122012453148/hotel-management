@@ -29,23 +29,46 @@ exports.registerUser = async (req, res) => {
             });
         }
 
+        // Generate verification token
+        const verificationToken = crypto.randomBytes(20).toString('hex');
+
         const user = await User.create({
             name,
             email,
             password,
             role: role || 'customer',
-            isVerified: true // Auto-verify for seamless experience
+            isVerified: false,
+            verificationToken
         });
 
         if (user) {
-            res.status(201).json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                wishlist: user.wishlist || [],
-                token: generateToken(user._id),
-            });
+            // Send verification email
+            const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+            
+            try {
+                await sendEmail({
+                    email: user.email,
+                    subject: 'Email Verification | Royal Hotel',
+                    html: `
+                        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #e5ead7; border-radius: 24px; text-align: center; background-color: #fafbf5;">
+                            <h1 style="color: #2c332b; font-size: 24px; font-weight: 800; margin-bottom: 20px;">Welcome to Royal Hotel!</h1>
+                            <p style="color: #667064; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">Thank you for joining us. To complete your registration and ensure your account is secure, please verify your email address by clicking the button below.</p>
+                            <a href="${verificationUrl}" style="background-color: #2c332b; color: #ffffff !important; padding: 16px 36px; text-decoration: none; border-radius: 40px; font-weight: 800; display: inline-block; font-size: 14px; letter-spacing: 1px;">VERIFY MY EMAIL</a>
+                            <p style="margin-top: 30px; font-size: 12px; color: #a1bc98;">If you didn't create this account, you can safely ignore this email.</p>
+                        </div>
+                    `
+                });
+
+                res.status(201).json({
+                    message: 'Registration successful! Please check your email to verify your account.'
+                });
+            } catch (emailError) {
+                console.error('Registration Email Error:', emailError);
+                // Even if email fails, user is created. They can use "Resend Verification" later.
+                res.status(201).json({
+                    message: 'Registration successful, but we could not send the verification email. Please try to login and request a new one.'
+                });
+            }
         } else {
             res.status(400).json({ message: 'Invalid user data' });
         }
@@ -85,6 +108,12 @@ exports.loginUser = async (req, res) => {
         if (user && (await user.matchPassword(password))) {
             if (user.isBlocked) {
                 return res.status(403).json({ message: 'Your account has been blocked by admin' });
+            }
+
+            if (!user.isVerified) {
+                return res.status(401).json({ 
+                    message: 'Please verify your email address first. Check your inbox for the verification link.' 
+                });
             }
 
             // If a specific role is requested, enforce it
@@ -133,8 +162,8 @@ exports.forgotPassword = async (req, res) => {
             .update(resetToken)
             .digest('hex');
 
-        // Set expire (10 minutes)
-        user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+        // Set expire (1 hour)
+        user.resetPasswordExpires = Date.now() + 60 * 60 * 1000;
 
         await user.save();
 
@@ -148,12 +177,11 @@ exports.forgotPassword = async (req, res) => {
                 subject: 'Password Reset Token',
                 message,
                 html: `
-                    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 600px; margin: auto;">
-                        <h2 style="color: #333;">Password Reset Request</h2>
-                        <p>You requested to reset your password. Please click the button below to proceed:</p>
-                        <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a>
-                        <p style="margin-top: 20px;">If you didn't request this, please ignore this email.</p>
-                        <p>This link is valid for 10 minutes.</p>
+                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #e5ead7; border-radius: 24px; text-align: center; background-color: #fafbf5;">
+                        <h2 style="color: #2c332b; font-size: 24px; font-weight: 800; margin-bottom: 20px;">Password Reset Request</h2>
+                        <p style="color: #667064; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">You requested to reset your password. Please click the button below to proceed. This link is valid for 1 hour.</p>
+                        <a href="${resetUrl}" style="background-color: #dc3545; color: #ffffff !important; padding: 16px 36px; text-decoration: none; border-radius: 40px; font-weight: 800; display: inline-block; font-size: 14px; letter-spacing: 1px;">RESET PASSWORD</a>
+                        <p style="margin-top: 30px; font-size: 12px; color: #a1bc98;">If you didn't request this, you can safely ignore this email.</p>
                     </div>
                 `
             });
