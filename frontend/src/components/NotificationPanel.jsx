@@ -18,8 +18,10 @@ const NotificationPanel = () => {
       // Fetch initial notifications
       fetchNotifications();
 
-      // Initialize Socket.io
-      socketRef.current = io('http://localhost:5000');
+      // Initialize Socket.io — use env var so production points to the Render backend
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const socketUrl = import.meta.env.VITE_SOCKET_URL || apiUrl.replace('/api', '').replace(/\/$/, '');
+      socketRef.current = io(socketUrl, { transports: ['websocket', 'polling'] });
       
       // Join user-specific room
       socketRef.current.emit('join', user._id);
