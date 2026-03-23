@@ -77,14 +77,16 @@ exports.updatePaymentStatus = async (req, res) => {
         booking.status = 'Pending';
         await booking.save();
 
-        // ⚡ Optional: Notifications (Wrapped in try/catch to ensure payment success doesn't fail due to notification glitches)
+        // ⚡ Respond immediately — do NOT wait for notifications/emails
+        res.status(200).json({ message: 'Payment updated successfully', booking });
+
+        // Run notifications in background (fire-and-forget)
         try {
             const io = req.app.get('socketio');
             const hotel = await Hotel.findById(booking.hotel);
             
-            // 1. Emit real-time inventory update if room exists
+            // 1. Emit real-time inventory update
             if (io && booking.room) {
-               // Use the already populated room object
                const roomObj = booking.room;
                io.to(hotel?.manager?.toString()).emit('roomBooked', { 
                    roomId: roomObj._id, 
@@ -92,9 +94,9 @@ exports.updatePaymentStatus = async (req, res) => {
                });
             }
 
-            // 2. Send Detailed Branded Email to Customer
+            // 2. Notify Customer
             if (req.user && req.user.email) {
-                await sendNotification(io, {
+                sendNotification(io, {
                     userId: req.user._id,
                     userEmail: req.user.email,
                     title: 'Payment Successful! ✅',
@@ -107,25 +109,25 @@ exports.updatePaymentStatus = async (req, res) => {
                         'Amount': `₹${booking.totalPrice}`,
                         'Transaction ID': booking._id.toString().toUpperCase().slice(-8)
                     }
-                });
+                }).catch(e => console.error('Payment notif error:', e.message));
             }
 
             // 3. Notify Manager
             if (hotel && hotel.manager) {
-                await sendNotification(io, {
+                sendNotification(io, {
                     userId: hotel.manager,
                     userEmail: '', 
                     title: 'New Booking Request 🔔',
                     message: `A customer has paid for a new booking at ${hotel.name}. Please review and accept or reject it.`,
                     type: 'booking',
                     link: '/manager/dashboard'
-                });
+                }).catch(e => console.error('Manager notif error:', e.message));
             }
         } catch (notifError) {
-            console.error('Non-critical notification error during payment:', notifError);
+            console.error('Background notification error after payment:', notifError);
         }
 
-        return res.status(200).json({ message: 'Payment updated successfully', booking });
+        return;
     } catch (error) {
         console.error('Critical Payment Update Error:', error);
         return res.status(500).json({ message: error.message || 'Internal Server Error' });
@@ -246,29 +248,30 @@ exports.updateBookingStatus = async (req, res) => {
            }
         }
 
-        // Send Notification to the customer
-        const io = req.app.get('socketio');
-        const customer = await User.findById(booking.user);
-        
-        await sendNotification(io, {
-            userId: booking.user,
-            userEmail: customer ? customer.email : '',
-            title: status === 'Confirmed' ? 'Booking Confirmed! 🎊' : `Booking Update: ${status}`,
-            message: status === 'Confirmed' 
-                ? `Great news! Your stay at ${booking.hotel.name} has been officially confirmed by the manager. We look forward to welcoming you!`
-                : `Your booking at ${booking.hotel.name} is now ${status}.`,
-            type: status === 'Cancelled' ? 'cancellation' : 'booking',
-            link: '/dashboard',
-            payload: status === 'Confirmed' ? {
-                'Hotel': booking.hotel.name,
-                'Check-in': new Date(booking.checkIn).toLocaleDateString(),
-                'Check-out': new Date(booking.checkOut).toLocaleDateString(),
-                'Total Price': `₹${booking.totalPrice}`,
-                'Status': 'Confirmed'
-            } : null
-        });
-
+        // ⚡ Respond immediately — do NOT wait for notifications/emails
         res.json(booking);
+
+        // Run notification in background (fire-and-forget)
+        const io = req.app.get('socketio');
+        User.findById(booking.user).then(customer => {
+            sendNotification(io, {
+                userId: booking.user,
+                userEmail: customer ? customer.email : '',
+                title: status === 'Confirmed' ? 'Booking Confirmed! 🎊' : `Booking Update: ${status}`,
+                message: status === 'Confirmed' 
+                    ? `Great news! Your stay at ${booking.hotel.name} has been officially confirmed by the manager. We look forward to welcoming you!`
+                    : `Your booking at ${booking.hotel.name} is now ${status}.`,
+                type: status === 'Cancelled' ? 'cancellation' : 'booking',
+                link: '/dashboard',
+                payload: status === 'Confirmed' ? {
+                    'Hotel': booking.hotel.name,
+                    'Check-in': new Date(booking.checkIn).toLocaleDateString(),
+                    'Check-out': new Date(booking.checkOut).toLocaleDateString(),
+                    'Total Price': `₹${booking.totalPrice}`,
+                    'Status': 'Confirmed'
+                } : null
+            }).catch(e => console.error('Status notif error:', e.message));
+        }).catch(e => console.error('Customer lookup error:', e.message));
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

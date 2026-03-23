@@ -71,7 +71,11 @@ const sendNotification = async (io, notificationData) => {
                 }];
             }
 
-            await sendEmail(emailOptions);
+            // ⚡ FIRE-AND-FORGET: Do NOT await — email sends in background so the
+            // API response returns instantly instead of waiting 30-60s for Gmail SMTP.
+            sendEmail(emailOptions).catch(err =>
+                console.error(`Background email failed to ${userEmail}:`, err.message)
+            );
         }
 
         return notification;
