@@ -204,11 +204,11 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Mobile Search Bar — Modernized */}
-      <div className="hero-search-mobile" style={{ display: 'none', backgroundColor: '#FBFAF0', padding: '2rem 1.5rem', borderTop: '2px solid #A1BC98' }}>
-        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {/* Mobile Search Bar — Modernized with Labels */}
+      <div className="hero-search-mobile" style={{ display: 'none', backgroundColor: '#FBFAF0', padding: '1.5rem 1.5rem 2.5rem', borderTop: '2px solid #A1BC98' }}>
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <label style={{ color: 'var(--secondary)', fontSize: '11px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>Destination</label>
+            <label style={{ color: 'var(--secondary)', fontSize: '11px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Destination</label>
             <LocationInput
               value={location}
               onChange={setLocation}
@@ -217,30 +217,34 @@ const Home = () => {
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div style={{ position: 'relative' }}>
-              <input 
-                 type="date" 
-                 className="mobile-date-input"
-                 value={checkIn}
-                 onChange={(e) => setCheckIn(e.target.value)}
-                 style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 10px' }} 
-              />
+            <div>
+               <label style={{ color: 'var(--secondary)', fontSize: '11px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1.5px' }}>CHECK IN</label>
+               <input 
+                  type="date" 
+                  className="mobile-date-input"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 10px' }} 
+               />
             </div>
-            <select
-               value={guests}
-               onChange={(e) => setGuests(e.target.value)}
-               className="mobile-guest-select"
-               style={{ height: '52px', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 10px' }}
-            >
-               <option value="1">1 Guest</option>
-               <option value="2">2 Guests</option>
-               <option value="3">3 Guests</option>
-               <option value="4+">4+ Guests</option>
-            </select>
+            <div>
+               <label style={{ color: 'var(--secondary)', fontSize: '11px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1.5px' }}>GUESTS</label>
+               <select
+                  value={guests}
+                  onChange={(e) => setGuests(e.target.value)}
+                  className="mobile-guest-select"
+                  style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 10px' }}
+               >
+                  <option value="1">1 Guest</option>
+                  <option value="2">2 Guests</option>
+                  <option value="3">3 Guests</option>
+                  <option value="4+">4+ Guests</option>
+               </select>
+            </div>
           </div>
           <button
             className="btn-primary"
-            style={{ height: '52px', width: '100%', borderRadius: '14px', fontWeight: 800, fontSize: '15px' }}
+            style={{ height: '56px', width: '100%', borderRadius: '16px', fontWeight: 800, fontSize: '15px' }}
             onClick={handleSearch}
           >
             Find My Stay

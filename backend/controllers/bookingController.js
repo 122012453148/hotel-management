@@ -84,13 +84,12 @@ exports.updatePaymentStatus = async (req, res) => {
             
             // 1. Emit real-time inventory update if room exists
             if (io && booking.room) {
-               const selectedRoom = await Room.findById(booking.room);
-               if (selectedRoom) {
-                   io.to(hotel?.manager?.toString()).emit('roomBooked', { 
-                       roomId: booking.room, 
-                       availability: selectedRoom.totalRooms - selectedRoom.occupiedRooms 
-                   });
-               }
+               // Use the already populated room object
+               const roomObj = booking.room;
+               io.to(hotel?.manager?.toString()).emit('roomBooked', { 
+                   roomId: roomObj._id, 
+                   availability: roomObj.totalRooms - roomObj.occupiedRooms 
+               });
             }
 
             // 2. Send Detailed Branded Email to Customer
@@ -115,7 +114,7 @@ exports.updatePaymentStatus = async (req, res) => {
             if (hotel && hotel.manager) {
                 await sendNotification(io, {
                     userId: hotel.manager,
-                    userEmail: '', // Usually don't email manager every time, just in-app notification
+                    userEmail: '', 
                     title: 'New Booking Request 🔔',
                     message: `A customer has paid for a new booking at ${hotel.name}. Please review and accept or reject it.`,
                     type: 'booking',
@@ -124,13 +123,12 @@ exports.updatePaymentStatus = async (req, res) => {
             }
         } catch (notifError) {
             console.error('Non-critical notification error during payment:', notifError);
-            // We ignore this error because the booking was already marked as PAID in the DB above.
         }
 
-        res.json({ message: 'Payment updated successfully', booking });
+        return res.status(200).json({ message: 'Payment updated successfully', booking });
     } catch (error) {
         console.error('Critical Payment Update Error:', error);
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message || 'Internal Server Error' });
     }
 };
 

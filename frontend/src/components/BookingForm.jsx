@@ -69,7 +69,8 @@ const BookingForm = ({ formData, setFormData }) => {
         @media (max-width: 768px) {
           .booking-form-box { padding: 1.5rem !important; border-radius: 20px !important; }
           .booking-form-title { font-size: 1.4rem !important; margin-bottom: 1.5rem !important; }
-          .booking-form-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+          .booking-form-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+          .booking-form-box input, .booking-form-box select { padding-left: 40px !important; font-size: 13px !important; }
         }
       `}</style>
     </div>
