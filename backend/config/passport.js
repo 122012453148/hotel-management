@@ -9,7 +9,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== 'your_googl
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: "/api/auth/google/callback",
-      passReqToCallback: true
+      passReqToCallback: true,
+      proxy: true
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
@@ -53,7 +54,8 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_ID !== 'your_githu
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: "/api/auth/github/callback",
-      passReqToCallback: true
+      passReqToCallback: true,
+      proxy: true
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
