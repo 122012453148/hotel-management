@@ -1,26 +1,32 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
+    // Priority: Use the new SMTP_ variables, fallback to old EMAIL_ ones
+    const host = process.env.SMTP_HOST || process.env.EMAIL_HOST;
+    const port = Number(process.env.SMTP_PORT || process.env.EMAIL_PORT);
+    const user = process.env.SMTP_USER || process.env.EMAIL_USER;
+    const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+    const fromEmail = process.env.FROM_EMAIL || user;
+
     console.log('--- SMTP Config Debug ---');
-    console.log(`Host: ${process.env.EMAIL_HOST}`);
-    console.log(`Port: ${process.env.EMAIL_PORT}`);
-    console.log(`User: ${process.env.EMAIL_USER}`);
-    console.log(`Pass length: ${process.env.EMAIL_PASS ? process.env.EMAIL_PASS.length : 0}`);
+    console.log(`Host: ${host}`);
+    console.log(`Port: ${port}`);
+    console.log(`User: ${user}`);
+    console.log(`From: ${fromEmail}`);
     console.log('------------------------');
 
     // Create a transporter
     const transporter = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: Number(process.env.EMAIL_PORT),
-        secure: false, // true for 465, false for other ports like 587 (STARTTLS)
-        family: 4,    // ⚡ CRITICAL: Force IPv4 at the CONNECTION level to fix Render ENETUNREACH
+        host,
+        port,
+        secure: port === 465, // True for 465 (SMTPS), false for others like 587 (STARTTLS)
+        family: 4,           // Force IPv4 for Render reliability
         auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
+            user,
+            pass,
         },
-        // Optional timeouts to prevent long hangs on Render
-        connectionTimeout: 10000, // 10s
-        greetingTimeout: 10000,   // 10s
+        connectionTimeout: 15000, // 15s
+        greetingTimeout: 15000,
         tls: {
             rejectUnauthorized: true
         }
@@ -36,7 +42,7 @@ const sendEmail = async (options) => {
     }
 
     const mailOptions = {
-        from: `${process.env.FROM_NAME || 'Royal Hotel'} <${process.env.EMAIL_USER}>`, // Use EMAIL_USER for from to avoid Gmail SPF errors
+        from: `${process.env.FROM_NAME || 'Royal Hotel'} <${fromEmail}>`, 
         to: options.email,
         subject: options.subject,
         text: options.message,
