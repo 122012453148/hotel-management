@@ -75,7 +75,7 @@ const HotelDetails = () => {
   const { hotel, rooms } = data;
 
   return (
-    <div className="container" style={{ padding: '4rem 0' }}>
+    <div className="container" style={{ padding: '4rem 1.5rem' }}>
       {/* Header */}
       <div className="details-header" style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: '2rem', flexWrap: 'wrap' }}>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
@@ -177,7 +177,7 @@ const HotelDetails = () => {
            }
         }
         @media (max-width: 768px) {
-           .container { padding: 1rem 0 !important; }
+           .container { padding: 1rem 1.5rem !important; }
            .property-nav {
               padding: 0.75rem 1rem !important;
               gap: 1.25rem !important;
