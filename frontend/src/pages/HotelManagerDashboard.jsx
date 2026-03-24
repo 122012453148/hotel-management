@@ -562,7 +562,8 @@ const HotelManagerDashboard = () => {
             boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
             border: '1px solid #f1f5f9',
             gap: '1rem',
-            flexWrap: 'nowrap'
+            flexWrap: 'nowrap',
+            zIndex: 50
           }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1 className="manager-header-title" style={{ fontSize: '24px', fontWeight: 900, color: 'var(--secondary)', letterSpacing: '-0.5px', marginBottom: '2px', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

@@ -141,8 +141,9 @@ const NotificationPanel = () => {
               position: 'absolute', top: '100%', right: 0, 
               marginTop: '1rem', width: '350px', 
               maxHeight: '450px', backgroundColor: 'white', 
-              borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', 
-              zIndex: 1001, overflow: 'hidden', display: 'flex', flexDirection: 'column'
+              borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.15)', 
+              zIndex: 9999, overflow: 'hidden', display: 'flex', flexDirection: 'column',
+              border: '1px solid #f1f5f9'
             }}
           >
             <div style={{ padding: '1rem', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
