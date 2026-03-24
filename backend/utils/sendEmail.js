@@ -25,8 +25,9 @@ const sendEmail = async (options) => {
             user,
             pass,
         },
-        connectionTimeout: 15000, // 15s
-        greetingTimeout: 15000,
+        connectionTimeout: 30000, // 30s
+        greetingTimeout: 30000,
+        socketTimeout: 30000,
         tls: {
             rejectUnauthorized: true
         }
