@@ -45,31 +45,25 @@ exports.registerUser = async (req, res) => {
             // Send verification email
             const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
             
-            try {
-                await sendEmail({
-                    email: user.email,
-                    subject: 'Email Verification | Royal Hotel',
-                    html: `
-                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #e5ead7; border-radius: 24px; text-align: center; background-color: #fafbf5;">
-                        <a href="${process.env.FRONTEND_URL}"><img src="${process.env.FRONTEND_URL}/logo.png" alt="Royal Hotel" style="width: 100px; margin-bottom: 30px; border: 0;"></a>
-                        <h1 style="color: #2c332b; font-size: 24px; font-weight: 800; margin-bottom: 20px;">Welcome to Royal Hotel!</h1>
-                        <p style="color: #667064; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">Thank you for joining us. To complete your registration and ensure your account is secure, please verify your email address by clicking the button below.</p>
-                        <a href="${verificationUrl}" style="background-color: #2c332b; color: #ffffff !important; padding: 16px 36px; text-decoration: none; border-radius: 40px; font-weight: 800; display: inline-block; font-size: 14px; letter-spacing: 1px;">VERIFY MY EMAIL</a>
-                        <p style="margin-top: 30px; font-size: 12px; color: #a1bc98;">If you didn't create this account, you can safely ignore this email.</p>
-                    </div>
-                    `
-                });
+            // ⚡ FIRE-AND-FORGET: Don't await the email. 
+            // Respond instantly to the user to fix the 7-minute hang.
+            sendEmail({
+                email: user.email,
+                subject: 'Email Verification | Royal Hotel',
+                html: `
+                <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #e5ead7; border-radius: 24px; text-align: center; background-color: #fafbf5;">
+                    <a href="${process.env.FRONTEND_URL}"><img src="${process.env.FRONTEND_URL}/logo.png" alt="Royal Hotel" style="width: 100px; margin-bottom: 30px; border: 0;"></a>
+                    <h1 style="color: #2c332b; font-size: 24px; font-weight: 800; margin-bottom: 20px;">Welcome to Royal Hotel!</h1>
+                    <p style="color: #667064; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">Thank you for joining us. To complete your registration and ensure your account is secure, please verify your email address by clicking the button below.</p>
+                    <a href="${verificationUrl}" style="background-color: #2c332b; color: #ffffff !important; padding: 16px 36px; text-decoration: none; border-radius: 40px; font-weight: 800; display: inline-block; font-size: 14px; letter-spacing: 1px;">VERIFY MY EMAIL</a>
+                    <p style="margin-top: 30px; font-size: 12px; color: #a1bc98;">If you didn't create this account, you can safely ignore this email.</p>
+                </div>
+                `
+            }).catch(e => console.error('Background Registration Email Error:', e.message));
 
-                res.status(201).json({
-                    message: 'Registration successful! Please check your email to verify your account.'
-                });
-            } catch (emailError) {
-                console.error('Registration Email Error:', emailError);
-                // Even if email fails, user is created. They can use "Resend Verification" later.
-                res.status(201).json({
-                    message: 'Registration successful, but we could not send the verification email. Please try to login and request a new one.'
-                });
-            }
+            res.status(201).json({
+                message: 'Registration successful! Please check your email to verify your account.'
+            });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
         }
@@ -172,29 +166,22 @@ exports.forgotPassword = async (req, res) => {
         const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
         const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please click the link to reset: \n\n ${resetUrl}`;
 
-        try {
-            await sendEmail({
-                email: user.email,
-                subject: 'Password Reset Token',
-                html: `
-                    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #e5ead7; border-radius: 24px; text-align: center; background-color: #fafbf5;">
-                        <a href="${process.env.FRONTEND_URL}"><img src="${process.env.FRONTEND_URL}/logo.png" alt="Royal Hotel" style="width: 100px; margin-bottom: 30px; border: 0;"></a>
-                        <h2 style="color: #2c332b; font-size: 24px; font-weight: 800; margin-bottom: 20px;">Password Reset Request</h2>
-                        <p style="color: #667064; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">You requested to reset your password. Please click the button below to proceed. This link is valid for 1 hour.</p>
-                        <a href="${resetUrl}" style="background-color: #dc3545; color: #ffffff !important; padding: 16px 36px; text-decoration: none; border-radius: 40px; font-weight: 800; display: inline-block; font-size: 14px; letter-spacing: 1px;">RESET PASSWORD</a>
-                        <p style="margin-top: 30px; font-size: 12px; color: #a1bc98;">If you didn't request this, you can safely ignore this email.</p>
-                    </div>
-                `
-            });
+        // ⚡ FIRE-AND-FORGET
+        sendEmail({
+            email: user.email,
+            subject: 'Password Reset Token',
+            html: `
+                <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #e5ead7; border-radius: 24px; text-align: center; background-color: #fafbf5;">
+                    <a href="${process.env.FRONTEND_URL}"><img src="${process.env.FRONTEND_URL}/logo.png" alt="Royal Hotel" style="width: 100px; margin-bottom: 30px; border: 0;"></a>
+                    <h2 style="color: #2c332b; font-size: 24px; font-weight: 800; margin-bottom: 20px;">Password Reset Request</h2>
+                    <p style="color: #667064; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">You requested to reset your password. Please click the button below to proceed. This link is valid for 1 hour.</p>
+                    <a href="${resetUrl}" style="background-color: #dc3545; color: #ffffff !important; padding: 16px 36px; text-decoration: none; border-radius: 40px; font-weight: 800; display: inline-block; font-size: 14px; letter-spacing: 1px;">RESET PASSWORD</a>
+                    <p style="margin-top: 30px; font-size: 12px; color: #a1bc98;">If you didn't request this, you can safely ignore this email.</p>
+                </div>
+            `
+        }).catch(e => console.error('Background Forgot Password Email Error:', e.message));
 
-            res.status(200).json({ message: 'Reset email sent' });
-        } catch (error) {
-            console.error('Email Error:', error);
-            user.resetPasswordToken = undefined;
-            user.resetPasswordExpires = undefined;
-            await user.save();
-            return res.status(500).json({ message: `Email could not be sent: ${error.message}` });
-        }
+        res.status(200).json({ message: 'Reset email sent' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
