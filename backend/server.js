@@ -6,8 +6,10 @@ const morgan = require('morgan');
 const http = require('http');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
-// Load environment variables
-dotenv.config();
+// Load environment variables (only in local development)
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 
 const passport = require('passport');
 require('./config/passport');
