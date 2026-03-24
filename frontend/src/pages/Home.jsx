@@ -22,6 +22,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState('');
   const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
   const [adults, setAdults] = useState('1');
   const [children, setChildren] = useState('0');
   const [currentHero, setCurrentHero] = useState(0);
@@ -40,7 +41,6 @@ const Home = () => {
     };
     fetchPopular();
 
-    // Slideshow interval
     const interval = setInterval(() => {
       setCurrentHero((prev) => (prev + 1) % HERO_IMAGES.length);
     }, 6000);
@@ -50,6 +50,7 @@ const Home = () => {
   const handleSearch = () => {
     let url = `/hotels?location=${location}`;
     if (checkIn) url += `&checkIn=${checkIn}`;
+    if (checkOut) url += `&checkOut=${checkOut}`;
     url += `&adults=${adults}&children=${children}`;
     navigate(url);
   };
@@ -145,12 +146,12 @@ const Home = () => {
           className="hero-search-desktop"
           style={{
             position: 'absolute',
-                bottom: '8%',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '94%',
-                maxWidth: '1200px',
-                zIndex: 10,
+            bottom: '8%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '94%',
+            maxWidth: '1280px',
+            zIndex: 10,
           }}
         >
           <motion.div
@@ -160,13 +161,13 @@ const Home = () => {
             style={{
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(15px)',
-              padding: '2rem 2.5rem',
+              padding: '2rem 2.25rem',
               borderRadius: '30px',
               border: '1px solid rgba(255,255,255,0.2)',
               boxShadow: '0 25px 50px rgba(0,0,0,0.4)',
               display: 'grid',
-              gridTemplateColumns: 'minmax(200px, 2fr) minmax(150px, 1.2fr) minmax(220px, 1.8fr) 0.8fr',
-              gap: '1.25rem',
+              gridTemplateColumns: 'minmax(180px, 1.8fr) minmax(130px, 0.9fr) minmax(130px, 0.9fr) minmax(210px, 1.8fr) 0.7fr',
+              gap: '1rem',
               alignItems: 'end',
             }}
           >
@@ -181,19 +182,23 @@ const Home = () => {
             </div>
             <div style={{ textAlign: 'left' }}>
               <label style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px', fontWeight: 800, marginBottom: '12px', display: 'block', textTransform: 'uppercase', letterSpacing: '2px' }}>CHECK IN</label>
-              <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} style={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', padding: '0 15px', fontSize: '14px', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', height: '54px', width: '100%' }} />
+              <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} style={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', padding: '0 15px', fontSize: '13px', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', height: '54px', width: '100%' }} />
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <label style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px', fontWeight: 800, marginBottom: '12px', display: 'block', textTransform: 'uppercase', letterSpacing: '2px' }}>CHECK OUT</label>
+              <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} style={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', padding: '0 15px', fontSize: '13px', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', height: '54px', width: '100%' }} />
             </div>
             <div style={{ textAlign: 'left' }}>
                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 <div>
-                  <label style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px', fontWeight: 800, marginBottom: '12px', display: 'block', textTransform: 'uppercase', letterSpacing: '2px' }}>ADULTS</label>
-                  <select value={adults} onChange={(e) => setAdults(e.target.value)} style={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', padding: '0 15px', fontSize: '14px', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', height: '54px', width: '100%', cursor: 'pointer' }}>
+                  <label style={{ color: 'rgba(255,255,255,0.8)', fontSize: '10px', fontWeight: 800, marginBottom: '12px', display: 'block', textTransform: 'uppercase', letterSpacing: '2px' }}>ADULTS</label>
+                  <select value={adults} onChange={(e) => setAdults(e.target.value)} style={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', padding: '0 10px', fontSize: '13px', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', height: '54px', width: '100%', cursor: 'pointer' }}>
                     {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n} style={{color: 'black'}}>{n} Adult{n > 1 ? 's' : ''}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px', fontWeight: 800, marginBottom: '12px', display: 'block', textTransform: 'uppercase', letterSpacing: '2px' }}>CHILDREN</label>
-                  <select value={children} onChange={(e) => setChildren(e.target.value)} style={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', padding: '0 15px', fontSize: '14px', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', height: '54px', width: '100%', cursor: 'pointer' }}>
+                  <label style={{ color: 'rgba(255,255,255,0.8)', fontSize: '10px', fontWeight: 800, marginBottom: '12px', display: 'block', textTransform: 'uppercase', letterSpacing: '2px' }}>CHILD.</label>
+                  <select value={children} onChange={(e) => setChildren(e.target.value)} style={{ borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', padding: '0 10px', fontSize: '13px', backgroundColor: 'rgba(0,0,0,0.3)', color: 'white', height: '54px', width: '100%', cursor: 'pointer' }}>
                     {[0, 1, 2, 3, 4].map(n => <option key={n} value={n} style={{color: 'black'}}>{n} Child{n !== 1 ? 'ren' : ''}</option>)}
                   </select>
                 </div>
@@ -224,36 +229,26 @@ const Home = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
                <label style={{ color: 'var(--secondary)', fontSize: '11px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1.5px' }}>CHECK IN</label>
-               <input 
-                  type="date" 
-                  className="mobile-date-input"
-                  value={checkIn}
-                  onChange={(e) => setCheckIn(e.target.value)}
-                  style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 10px' }} 
-               />
+               <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 10px' }} />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <div>
+               <label style={{ color: 'var(--secondary)', fontSize: '11px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1.5px' }}>CHECK OUT</label>
+               <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 10px' }} />
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                    <label style={{ color: 'var(--secondary)', fontSize: '10px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>ADULTS</label>
-                   <select
-                      value={adults}
-                      onChange={(e) => setAdults(e.target.value)}
-                      style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 5px' }}
-                   >
+                   <select value={adults} onChange={(e) => setAdults(e.target.value)} style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 5px' }}>
                       {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n} Ad.</option>)}
                    </select>
                 </div>
                 <div>
                    <label style={{ color: 'var(--secondary)', fontSize: '10px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>CHILD.</label>
-                   <select
-                      value={children}
-                      onChange={(e) => setChildren(e.target.value)}
-                      style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 5px' }}
-                   >
+                   <select value={children} onChange={(e) => setChildren(e.target.value)} style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 5px' }}>
                       {[0, 1, 2, 3, 4].map(n => <option key={n} value={n}>{n} Ch.</option>)}
                    </select>
                 </div>
-            </div>
           </div>
           <button
             className="btn-primary"
