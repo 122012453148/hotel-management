@@ -44,12 +44,11 @@ exports.createPromotion = async (req, res) => {
     const sendPromoEmails = async () => {
         try {
             const users = await User.find({ email: { $exists: true } }).select('email');
-            const logoPath = path.join(__dirname, '../../frontend/public/logo.png');
-            const hasLogo = fs.existsSync(logoPath);
+            const logoUrl = `${process.env.FRONTEND_URL}/logo.png`;
             
             const htmlContent = `
                 <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #e5ead7; border-radius: 24px; text-align: center; background-color: #fafbf5;">
-                    ${hasLogo ? '<img src="cid:logo" alt="Royal Hotel" style="width: 120px; margin-bottom: 30px;">' : '<h2 style="color: #2c332b; margin-bottom: 30px;">ROYAL HOTEL</h2>'}
+                    <a href="${process.env.FRONTEND_URL}"><img src="${logoUrl}" alt="Royal Hotel" style="width: 120px; margin-bottom: 30px; border: 0;"></a>
                     <h1 style="color: #2c332b; font-size: 28px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">${title}</h1>
                     <p style="color: #667064; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">${description}</p>
                     <div style="background: #a1bc98; color: white; display: inline-block; padding: 12px 30px; border-radius: 40px; font-size: 22px; font-weight: 900; margin-bottom: 30px; letter-spacing: 1px;">${discountPercentage}% OFF</div>
@@ -62,21 +61,11 @@ exports.createPromotion = async (req, res) => {
 
             for (const user of users) {
                 try {
-                    const emailOptions = {
+                    await sendEmail({
                         email: user.email,
                         subject: `Special Offer: ${title}`,
                         html: htmlContent
-                    };
-
-                    if (hasLogo) {
-                        emailOptions.attachments = [{
-                            filename: 'logo.png',
-                            path: logoPath,
-                            cid: 'logo'
-                        }];
-                    }
-
-                    await sendEmail(emailOptions);
+                    });
                 } catch (err) {
                     console.error(`Failed to send promo email to ${user.email}:`, err.message);
                 }

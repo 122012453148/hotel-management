@@ -1,7 +1,5 @@
 const Notification = require('../models/Notification');
 const sendEmail = require('./sendEmail');
-const path = require('path');
-const fs = require('fs');
 
 const sendNotification = async (io, notificationData) => {
     const { userId, title, message, type, link, userEmail, payload } = notificationData;
@@ -23,8 +21,7 @@ const sendNotification = async (io, notificationData) => {
 
         // 3. Send Branded Email if userEmail is provided
         if (userEmail) {
-            const logoPath = path.join(__dirname, '../../frontend/public/logo.png');
-            const hasLogo = fs.existsSync(logoPath);
+            const logoUrl = `${process.env.FRONTEND_URL}/logo.png`;
             
             // Build dynamic payload details (e.g., booking details)
             let payloadDetailsHTML = '';
@@ -43,7 +40,7 @@ const sendNotification = async (io, notificationData) => {
 
             const htmlContent = `
                 <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 580px; margin: 0 auto; padding: 40px; border: 1px solid #e5ead7; border-radius: 30px; text-align: center; background-color: #fafbf5;">
-                    ${hasLogo ? '<img src="cid:logo" alt="Royal Hotel" style="width: 100px; margin-bottom: 30px;">' : '<h2 style="color: #2c332b; margin-bottom: 30px;">ROYAL HOTEL</h2>'}
+                    <a href="${process.env.FRONTEND_URL}"><img src="${logoUrl}" alt="Royal Hotel" style="width: 100px; margin-bottom: 30px; border: 0;"></a>
                     <h2 style="color: #2c332b; font-size: 24px; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">${title}</h2>
                     <p style="font-size: 16px; color: #667064; line-height: 1.6; margin-bottom: 25px;">${message}</p>
                     
@@ -62,14 +59,6 @@ const sendNotification = async (io, notificationData) => {
                 subject: `${title} | Royal Hotel`,
                 html: htmlContent
             };
-
-            if (hasLogo) {
-                emailOptions.attachments = [{
-                    filename: 'logo.png',
-                    path: logoPath,
-                    cid: 'logo'
-                }];
-            }
 
             // ⚡ FIRE-AND-FORGET: Do NOT await — email sends in background so the
             // API response returns instantly instead of waiting 30-60s for Gmail SMTP.
