@@ -13,12 +13,15 @@ const sendEmail = async (options) => {
         host: process.env.EMAIL_HOST,
         port: Number(process.env.EMAIL_PORT),
         secure: false, // true for 465, false for other ports like 587 (STARTTLS)
+        family: 4,    // ⚡ CRITICAL: Force IPv4 at the CONNECTION level to fix Render ENETUNREACH
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
         },
+        // Optional timeouts to prevent long hangs on Render
+        connectionTimeout: 10000, // 10s
+        greetingTimeout: 10000,   // 10s
         tls: {
-            family: 4,
             rejectUnauthorized: true
         }
     });
