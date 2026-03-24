@@ -18,7 +18,8 @@ const Booking = () => {
   const [formData, setFormData] = useState({
     checkIn: new Date().toISOString().split('T')[0],
     checkOut: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-    guests: 2,
+    adults: 2,
+    children: 0,
     selectedExtras: []
   });
 
@@ -134,7 +135,8 @@ const Booking = () => {
         checkIn: formData.checkIn,
         checkOut: formData.checkOut,
         totalPrice,
-        guests: formData.guests,
+        adults: formData.adults,
+        children: formData.children,
         selectedExtras: formData.selectedExtras
       };
       const { data: newBooking } = await api.post('/bookings', bookingData);

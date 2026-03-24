@@ -3,7 +3,7 @@ import { Calendar, Users } from 'lucide-react';
 
 const BookingForm = ({ formData, setFormData }) => {
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: parseInt(e.target.value) || e.target.value });
   };
 
   return (
@@ -46,22 +46,43 @@ const BookingForm = ({ formData, setFormData }) => {
         </div>
       </div>
 
-      <div>
-        <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-light)' }}>
-          Number of Guests
-        </label>
-        <div style={{ position: 'relative', width: '100%' }}>
-          <Users size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
-          <select 
-            name="guests" 
-            value={formData.guests} 
-            onChange={handleChange}
-            style={{ paddingLeft: '45px', height: '52px', width: '100%', display: 'block', boxSizing: 'border-box' }}
-          >
-            {[1, 2, 3, 4, 5, 6].map(num => (
-              <option key={num} value={num}>{num} {num === 1 ? 'Guest' : 'Guests'}</option>
-            ))}
-          </select>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+        <div>
+          <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-light)' }}>
+            Number of Adults
+          </label>
+          <div style={{ position: 'relative', width: '100%' }}>
+            <Users size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
+            <select 
+              name="adults" 
+              value={formData.adults} 
+              onChange={handleChange}
+              style={{ paddingLeft: '45px', height: '52px', width: '100%', display: 'block', boxSizing: 'border-box' }}
+            >
+              {[1, 2, 3, 4, 5, 6].map(num => (
+                <option key={num} value={num}>{num} Adult{num > 1 ? 's' : ''}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-light)' }}>
+            Number of Children
+          </label>
+          <div style={{ position: 'relative', width: '100%' }}>
+            <Users size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
+            <select 
+              name="children" 
+              value={formData.children} 
+              onChange={handleChange}
+              style={{ paddingLeft: '45px', height: '52px', width: '100%', display: 'block', boxSizing: 'border-box' }}
+            >
+              {[0, 1, 2, 3, 4].map(num => (
+                <option key={num} value={num}>{num} Child{num !== 1 ? 'ren' : ''}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -70,6 +91,7 @@ const BookingForm = ({ formData, setFormData }) => {
           .booking-form-box { padding: 1.5rem !important; border-radius: 20px !important; }
           .booking-form-title { font-size: 1.4rem !important; margin-bottom: 1.5rem !important; }
           .booking-form-grid { grid-template-columns: 1fr !important; gap: 1.25rem !important; }
+          .booking-form-box > div:last-child { grid-template-columns: 1fr !important; gap: 1.25rem !important; }
           .booking-form-box input, .booking-form-box select { 
             width: 100% !important;
             max-width: 100% !important;
