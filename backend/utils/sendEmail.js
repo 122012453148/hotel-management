@@ -1,6 +1,13 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
+    console.log('--- SMTP Config Debug ---');
+    console.log(`Host: ${process.env.EMAIL_HOST}`);
+    console.log(`Port: ${process.env.EMAIL_PORT}`);
+    console.log(`User: ${process.env.EMAIL_USER}`);
+    console.log(`Pass length: ${process.env.EMAIL_PASS ? process.env.EMAIL_PASS.length : 0}`);
+    console.log('------------------------');
+
     // Create a transporter
     const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
@@ -11,9 +18,7 @@ const sendEmail = async (options) => {
             pass: process.env.EMAIL_PASS,
         },
         tls: {
-            // Force IPv4 because Render sometimes struggles with IPv6 connection to Gmail (ENETUNREACH)
             family: 4,
-            // Pre-reject unauthorized to ensure a secure STARTTLS connection
             rejectUnauthorized: true
         }
     });
