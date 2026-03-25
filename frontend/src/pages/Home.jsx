@@ -235,20 +235,18 @@ const Home = () => {
                <label style={{ color: 'var(--secondary)', fontSize: '11px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1.5px' }}>CHECK OUT</label>
                <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 12px', boxSizing: 'border-box' }} />
             </div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-                <div>
-                   <label style={{ color: 'var(--secondary)', fontSize: '10px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>ADULTS</label>
-                   <select value={adults} onChange={(e) => setAdults(e.target.value)} style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 8px', boxSizing: 'border-box' }}>
-                      {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n} Ad.</option>)}
-                   </select>
-                </div>
-                <div>
-                   <label style={{ color: 'var(--secondary)', fontSize: '10px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>CHILD.</label>
-                   <select value={children} onChange={(e) => setChildren(e.target.value)} style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 8px', boxSizing: 'border-box' }}>
-                      {[0, 1, 2, 3, 4].map(n => <option key={n} value={n}>{n} Ch.</option>)}
-                   </select>
-                </div>
+            <div>
+               <label style={{ color: 'var(--secondary)', fontSize: '10px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>ADULTS</label>
+               <select value={adults} onChange={(e) => setAdults(e.target.value)} style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 8px', boxSizing: 'border-box' }}>
+                  {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n} Ad.</option>)}
+               </select>
+            </div>
+            <div>
+               <label style={{ color: 'var(--secondary)', fontSize: '10px', fontWeight: 900, marginBottom: '8px', display: 'block', textTransform: 'uppercase', letterSpacing: '1px' }}>CHILD.</label>
+               <select value={children} onChange={(e) => setChildren(e.target.value)} style={{ height: '52px', width: '100%', borderRadius: '14px', backgroundColor: 'white', border: '2px solid #E5EAD7', color: 'var(--secondary)', fontSize: '13px', fontWeight: 800, padding: '0 8px', boxSizing: 'border-box' }}>
+                  {[0, 1, 2, 3, 4].map(n => <option key={n} value={n}>{n} Ch.</option>)}
+               </select>
+            </div>
           </div>
           <button
             className="btn-primary"
