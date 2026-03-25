@@ -3,7 +3,10 @@ import { Calendar, Users } from 'lucide-react';
 
 const BookingForm = ({ formData, setFormData }) => {
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: parseInt(e.target.value) || e.target.value });
+    const { name, value, type } = e.target;
+    // Only parse as int for adults and children fields, keep as string for dates
+    const finalValue = (name === 'adults' || name === 'children') ? (parseInt(value) || 0) : value;
+    setFormData({ ...formData, [name]: finalValue });
   };
 
   return (
@@ -16,7 +19,7 @@ const BookingForm = ({ formData, setFormData }) => {
             Check-in Date
           </label>
           <div style={{ position: 'relative', width: '100%' }}>
-            <Calendar size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
+            <Calendar size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1, pointerEvents: 'none' }} />
             <input 
               type="date" 
               name="checkIn"
@@ -33,7 +36,7 @@ const BookingForm = ({ formData, setFormData }) => {
             Check-out Date
           </label>
           <div style={{ position: 'relative', width: '100%' }}>
-            <Calendar size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
+            <Calendar size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1, pointerEvents: 'none' }} />
             <input 
               type="date" 
               name="checkOut"
@@ -52,7 +55,7 @@ const BookingForm = ({ formData, setFormData }) => {
             Number of Adults
           </label>
           <div style={{ position: 'relative', width: '100%' }}>
-            <Users size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
+            <Users size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1, pointerEvents: 'none' }} />
             <select 
               name="adults" 
               value={formData.adults} 
@@ -71,7 +74,7 @@ const BookingForm = ({ formData, setFormData }) => {
             Number of Children
           </label>
           <div style={{ position: 'relative', width: '100%' }}>
-            <Users size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1 }} />
+            <Users size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--primary)', zIndex: 1, pointerEvents: 'none' }} />
             <select 
               name="children" 
               value={formData.children} 
@@ -98,8 +101,15 @@ const BookingForm = ({ formData, setFormData }) => {
             padding-left: 45px !important; 
             font-size: 14px !important; 
             box-sizing: border-box !important;
-            -webkit-appearance: none;
             background-color: white;
+          }
+          .booking-form-box select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+          }
+          .booking-form-box input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
           }
         }
       `}</style>
