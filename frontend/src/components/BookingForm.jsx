@@ -49,7 +49,7 @@ const BookingForm = ({ formData, setFormData }) => {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+      <div className="booking-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
         <div>
           <label style={{ display: 'block', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-light)' }}>
             Number of Adults
@@ -91,14 +91,19 @@ const BookingForm = ({ formData, setFormData }) => {
 
       <style>{`
         @media (max-width: 768px) {
-          .booking-form-box { padding: 1.5rem !important; border-radius: 20px !important; }
-          .booking-form-title { font-size: 1.4rem !important; margin-bottom: 1.5rem !important; }
-          .booking-form-grid { grid-template-columns: 1fr !important; gap: 1.25rem !important; }
-          .booking-form-box > div:last-child { grid-template-columns: 1fr !important; gap: 1.25rem !important; }
+          .booking-form-box { padding: 1.5rem !important; border-radius: 24px !important; margin: 0 auto; width: 100%; box-sizing: border-box; }
+          .booking-form-title { font-size: 1.5rem !important; margin-bottom: 1.5rem !important; text-align: left; }
+          .booking-form-grid { 
+            grid-template-columns: 1fr !important; 
+            gap: 1.5rem !important; 
+            margin-bottom: 1.5rem !important; 
+            width: 100% !important;
+          }
           .booking-form-box input, .booking-form-box select { 
             width: 100% !important;
             max-width: 100% !important;
-            padding-left: 45px !important; 
+            padding: 0 16px 0 45px !important;
+            height: 52px !important;
             font-size: 14px !important; 
             box-sizing: border-box !important;
             background-color: white;

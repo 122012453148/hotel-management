@@ -160,7 +160,7 @@ const Booking = () => {
   };
 
   return (
-    <div className="container" style={{ padding: '4rem 0' }}>
+    <div className="container" style={{ padding: '4rem 1.5rem' }}>
       <button 
         onClick={() => navigate(-1)} 
         style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'transparent', color: 'var(--text-light)', marginBottom: '3rem', fontWeight: 600 }}
@@ -250,16 +250,18 @@ const Booking = () => {
             flex-direction: column !important;
             gap: 1.5rem !important;
             margin-bottom: 2.5rem !important;
-            text-align: center;
+            text-align: left !important;
+            align-items: flex-start !important;
           }
           .hotel-brief-image { 
             width: 100% !important; 
             height: 200px !important; 
             border-radius: 20px !important;
           }
-          .hotel-brief-info { width: 100% !important; }
-          .hotel-brief-info h1 { font-size: 1.75rem !important; margin-bottom: 0.5rem !important; }
+          .hotel-brief-info { width: 100% !important; text-align: left !important; }
+          .hotel-brief-info h1 { font-size: 2.2rem !important; margin-bottom: 0.5rem !important; }
           .hotel-brief-info p { font-size: 1rem !important; }
+          .hotel-brief-info > div:first-child { justify-content: flex-start !important; }
         }
       `}</style>
     </div>
