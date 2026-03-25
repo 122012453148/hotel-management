@@ -100,9 +100,9 @@ const BookingForm = ({ formData, setFormData }) => {
             width: 100% !important;
           }
           .booking-form-box input, .booking-form-box select { 
-            width: 100% !important;
-            max-width: 320px !important; 
+            width: 240px !important; /* Explicitly reduced to fixed width on mobile */
             min-width: 0 !important;
+            max-width: 100% !important;
             padding: 0 16px 0 45px !important;
             height: 50px !important;
             font-size: 14px !important; 
