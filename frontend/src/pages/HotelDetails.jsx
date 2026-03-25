@@ -177,7 +177,8 @@ const HotelDetails = () => {
            }
         }
         @media (max-width: 768px) {
-           .container { padding: 1rem 1.5rem !important; }
+           .container { padding: 1rem 1.25rem !important; overflow-x: hidden; }
+           .details-layout { gap: 2rem !important; }
            .property-nav {
               padding: 0.75rem 1rem !important;
               gap: 1.25rem !important;

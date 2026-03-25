@@ -50,10 +50,10 @@ const OffersSection = ({ hotelId = null }) => {
   };
 
   return (
-    <section style={{ padding: '6rem 0', backgroundColor: '#f0fdf4' }}>
+    <section className="offers-section-outer" style={{ padding: '6rem 1.25rem', backgroundColor: '#f0fdf4' }}>
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '1rem' }}>
+          <h2 className="section-title" style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '1rem' }}>
             Exclusive Offers & Deals
           </h2>
           <p style={{ color: '#4b5563', fontSize: '1.1rem', fontWeight: 500 }}>
@@ -61,7 +61,7 @@ const OffersSection = ({ hotelId = null }) => {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2.5rem' }}>
           {offers.map((offer) => (
             <motion.div 
               key={offer._id}

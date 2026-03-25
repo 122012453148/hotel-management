@@ -17,7 +17,7 @@ const AmenitiesList = ({ amenities }) => {
     : allPossible.slice(0, 4);
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.5rem', marginTop: '1rem' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1.25rem', marginTop: '1rem' }}>
       {toShow.map((item, i) => (
         <div 
           key={i} 
