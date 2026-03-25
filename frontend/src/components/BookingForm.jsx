@@ -91,22 +91,24 @@ const BookingForm = ({ formData, setFormData }) => {
 
       <style>{`
         @media (max-width: 768px) {
-          .booking-form-box { padding: 1.5rem !important; border-radius: 24px !important; margin: 0 auto; width: 100%; box-sizing: border-box; }
-          .booking-form-title { font-size: 1.5rem !important; margin-bottom: 1.5rem !important; text-align: left; }
+          .booking-form-box { padding: 1.25rem !important; border-radius: 24px !important; margin: 0; width: 100%; box-sizing: border-box; }
+          .booking-form-title { font-size: 1.4rem !important; margin-bottom: 1.25rem !important; text-align: left; }
           .booking-form-grid { 
             grid-template-columns: 1fr !important; 
-            gap: 1.5rem !important; 
-            margin-bottom: 1.5rem !important; 
+            gap: 1.25rem !important; 
+            margin-bottom: 1.25rem !important; 
             width: 100% !important;
           }
           .booking-form-box input, .booking-form-box select { 
             width: 100% !important;
-            max-width: 100% !important;
+            max-width: 320px !important; 
+            min-width: 0 !important;
             padding: 0 16px 0 45px !important;
-            height: 52px !important;
+            height: 50px !important;
             font-size: 14px !important; 
             box-sizing: border-box !important;
             background-color: white;
+            display: block;
           }
           .booking-form-box select {
             -webkit-appearance: none;
