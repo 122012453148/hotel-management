@@ -2,7 +2,7 @@ const Notification = require('../models/Notification');
 const sendEmail = require('./sendEmail');
 
 const sendNotification = async (io, notificationData) => {
-    const { userId, title, message, type, link, userEmail, payload } = notificationData;
+    const { userId, title, message, type, link, userEmail, payload, btnText } = notificationData;
 
     try {
         // 1. Save to Database
@@ -46,7 +46,7 @@ const sendNotification = async (io, notificationData) => {
                     
                     ${payloadDetailsHTML}
 
-                    ${link ? `<div style="margin-top: 30px;"><a href="${process.env.FRONTEND_URL}${link}" style="display: inline-block; padding: 16px 36px; background-color: #2c332b; color: #ffffff !important; text-decoration: none; border-radius: 40px; font-weight: 800; font-size: 14px; letter-spacing: 1.5px; box-shadow: 0 10px 20px rgba(0,0,0,0.12);">VIEW DETAILS</a></div>` : ''}
+                    ${link ? `<div style="margin-top: 30px;"><a href="${process.env.FRONTEND_URL}${link}" style="display: inline-block; padding: 16px 36px; background-color: #2c332b; color: #ffffff !important; text-decoration: none; border-radius: 40px; font-weight: 800; font-size: 14px; letter-spacing: 1.5px; box-shadow: 0 10px 20px rgba(0,0,0,0.12);">${btnText || 'VIEW DETAILS'}</a></div>` : ''}
                     
                     <div style="margin-top: 50px; font-size: 12px; color: #a1bc98; font-weight: 700; border-top: 1px solid #e5ead7; padding-top: 25px; text-transform: uppercase; letter-spacing: 2px;">
                         &copy; 2026 Royal Hotel Bookings. All rights reserved.

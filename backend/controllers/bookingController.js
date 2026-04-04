@@ -102,7 +102,8 @@ exports.updatePaymentStatus = async (req, res) => {
                     title: 'Payment Successful! ✅',
                     message: `Your payment for ${hotel ? hotel.name : 'your booking'} has been successfully received. Your stay is now pending manager approval.`,
                     type: 'payment',
-                    link: '/dashboard',
+                    link: '/my-bookings',
+                    btnText: 'DOWNLOAD INVOICE',
                     payload: {
                         'Hotel': hotel ? hotel.name : 'Royal Hotel',
                         'Status': 'Payment Confirmed',
