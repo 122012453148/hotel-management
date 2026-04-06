@@ -155,35 +155,74 @@ const Payment = () => {
                 <motion.div 
                   initial={{ height: 0, opacity: 0 }} 
                   animate={{ height: 'auto', opacity: 1 }}
-                  style={{ marginLeft: '3.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid #e5e7eb', paddingTop: '1rem', marginTop: '0.5rem' }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', borderTop: '1px solid #e5e7eb', paddingTop: '1.5rem', marginTop: '1rem' }}
                 >
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
-                    <input 
-                      type="radio" 
-                      name="stripeType" 
-                      value="card" 
-                      checked={stripeType === 'card'} 
-                      onChange={() => setStripeType('card')}
-                      style={{ accentColor: 'var(--primary)' }}
-                    />
-                    <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--secondary)' }}>Credit / Debit Card</span>
-                    <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
-                       <img src="https://img.icons8.com/color/32/visa.png" alt="visa" style={{ height: '16px' }} />
-                       <img src="https://img.icons8.com/color/32/mastercard.png" alt="mastercard" style={{ height: '16px' }} />
-                    </div>
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
-                    <input 
-                      type="radio" 
-                      name="stripeType" 
-                      value="upi" 
-                      checked={stripeType === 'upi'} 
-                      onChange={() => setStripeType('upi')}
-                      style={{ accentColor: 'var(--primary)' }}
-                    />
-                    <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--secondary)' }}>UPI (Google Pay, PhonePe, etc.)</span>
-                    <img src="https://img.icons8.com/color/32/upi.png" alt="upi" style={{ height: '16px', marginLeft: 'auto' }} />
-                  </label>
+                  <div style={{ display: 'flex', gap: '2rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                      <input 
+                        type="radio" 
+                        name="stripeType" 
+                        value="card" 
+                        checked={stripeType === 'card'} 
+                        onChange={() => setStripeType('card')}
+                        style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }}
+                      />
+                      <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--secondary)' }}>Card</span>
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                      <input 
+                        type="radio" 
+                        name="stripeType" 
+                        value="upi" 
+                        checked={stripeType === 'upi'} 
+                        onChange={() => setStripeType('upi')}
+                        style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }}
+                      />
+                      <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--secondary)' }}>UPI</span>
+                    </label>
+                  </div>
+
+                  {stripeType === 'card' ? (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+                    >
+                      <div className="payment-input-group">
+                        <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-light)', marginBottom: '5px', display: 'block' }}>CARD NUMBER</label>
+                        <div style={{ position: 'relative' }}>
+                          <input type="text" placeholder="xxxx xxxx xxxx xxxx" className="payment-input" style={{ width: '100%', padding: '12px 15px', borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '1rem' }} />
+                          <div style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '5px' }}>
+                            <img src="https://img.icons8.com/color/32/visa.png" alt="visa" style={{ height: '18px' }} />
+                            <img src="https://img.icons8.com/color/32/mastercard.png" alt="mc" style={{ height: '18px' }} />
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <div className="payment-input-group">
+                          <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-light)', marginBottom: '5px', display: 'block' }}>EXPIRY DATE</label>
+                          <input type="text" placeholder="MM / YY" className="payment-input" style={{ width: '100%', padding: '12px 15px', borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '1rem' }} />
+                        </div>
+                        <div className="payment-input-group">
+                          <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-light)', marginBottom: '5px', display: 'block' }}>CVC / CVV</label>
+                          <input type="password" placeholder="***" className="payment-input" style={{ width: '100%', padding: '12px 15px', borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '1rem' }} />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="payment-input-group"
+                    >
+                      <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-light)', marginBottom: '5px', display: 'block' }}>UPI ID</label>
+                      <div style={{ position: 'relative' }}>
+                        <input type="text" placeholder="username@bankid" className="payment-input" style={{ width: '100%', padding: '12px 15px', borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '1rem' }} />
+                        <img src="https://img.icons8.com/color/32/upi.png" alt="upi" style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', height: '18px' }} />
+                      </div>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginTop: '8px' }}>Enter your VPA ID to pay with apps like GPay or PhonePe</p>
+                    </motion.div>
+                  )}
                 </motion.div>
               )}
             </label>
@@ -208,6 +247,7 @@ const Payment = () => {
       <style>{`
         .spin { animation: spin 2s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .payment-input:focus { outline: none; border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(161, 188, 152, 0.1); }
         @media (max-width: 768px) {
           .payment-title { font-size: 2rem !important; }
           .payment-card { padding: 1.5rem !important; border-radius: 24px !important; }
