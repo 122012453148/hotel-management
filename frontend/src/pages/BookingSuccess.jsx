@@ -28,12 +28,16 @@ const BookingSuccess = () => {
 
   const handleDownloadInvoice = async () => {
     try {
-      const response = await api.get(`/bookings/${bookingId}/invoice`, {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const userInfo = JSON.parse(localStorage.getItem('customerInfo') || localStorage.getItem('managerInfo') || '{}');
+      const token = userInfo.token;
+      
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const cleanBackendUrl = backendUrl.endsWith('/api') ? backendUrl : `${backendUrl.replace(/\/$/, '')}/api`;
+      
+      const downloadUrl = `${cleanBackendUrl}/bookings/${bookingId}/invoice?token=${token}`;
+      
       const link = document.createElement('a');
-      link.href = url;
+      link.href = downloadUrl;
       link.setAttribute('download', `invoice_${bookingId.substring(0, 8)}.pdf`);
       document.body.appendChild(link);
       link.click();

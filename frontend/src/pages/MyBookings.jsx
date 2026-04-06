@@ -46,17 +46,25 @@ const MyBookings = () => {
 
   const handleDownloadInvoice = async (id) => {
     try {
-      const response = await api.get(`/bookings/${id}/invoice`, {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      // Get the current token from localStorage (it's stored in customerInfo/managerInfo/adminInfo)
+      const userInfo = JSON.parse(localStorage.getItem('customerInfo') || localStorage.getItem('managerInfo') || '{}');
+      const token = userInfo.token;
+      
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      // Normalize backend URL (removing trailing /api if present as we'll add it ourselves or it's already there)
+      const cleanBackendUrl = backendUrl.endsWith('/api') ? backendUrl : `${backendUrl.replace(/\/$/, '')}/api`;
+      
+      const downloadUrl = `${cleanBackendUrl}/bookings/${id}/invoice?token=${token}`;
+      
+      // Create a temporary link and click it to trigger download
       const link = document.createElement('a');
-      link.href = url;
+      link.href = downloadUrl;
       link.setAttribute('download', `invoice_${id.substring(0, 8)}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-      toast.success('Invoice downloaded');
+      
+      toast.success('Invoice download started');
     } catch (err) {
       console.error('Download error:', err);
       toast.error('Failed to download invoice');

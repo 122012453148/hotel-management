@@ -4,6 +4,8 @@ const Hotel = require('../models/Hotel');
 const User = require('../models/User');
 const PDFDocument = require('pdfkit');
 const sendNotification = require('../utils/notificationUtil');
+const { generateToken } = require('./authController');
+const { generateInvoiceBuffer } = require('../utils/pdfGenerator');
 
 // @desc Create a new booking
 // @route POST /api/bookings
@@ -96,20 +98,29 @@ exports.updatePaymentStatus = async (req, res) => {
 
             // 2. Notify Customer
             if (req.user && req.user.email) {
+                // Generate PDF Buffer for attachment
+                const invoiceBuffer = await generateInvoiceBuffer(booking._id).catch(e => {
+                    console.error('Failed to generate invoice buffer for payment email:', e.message);
+                    return null;
+                });
+
                 sendNotification(io, {
                     userId: req.user._id,
                     userEmail: req.user.email,
                     title: 'Payment Successful! ✅',
-                    message: `Your payment for ${hotel ? hotel.name : 'your booking'} has been successfully received. Your stay is now pending manager approval.`,
+                    message: `Your payment for ${hotel ? hotel.name : 'your booking'} has been successfully received. Your stay is now pending manager approval. We have attached your invoice to this email.`,
                     type: 'payment',
-                    link: '/my-bookings',
-                    btnText: 'DOWNLOAD INVOICE',
+                    link: null, // Removed button as PDF is attached
                     payload: {
                         'Hotel': hotel ? hotel.name : 'Royal Hotel',
                         'Status': 'Payment Confirmed',
                         'Amount': `₹${booking.totalPrice}`,
                         'Transaction ID': booking._id.toString().toUpperCase().slice(-8)
-                    }
+                    },
+                    attachments: invoiceBuffer ? [{
+                        filename: `invoice_${booking._id.toString().slice(-6)}.pdf`,
+                        content: invoiceBuffer
+                    }] : []
                 }).catch(e => console.error('Payment notif error:', e.message));
             }
 
@@ -254,23 +265,37 @@ exports.updateBookingStatus = async (req, res) => {
 
         // Run notification in background (fire-and-forget)
         const io = req.app.get('socketio');
-        User.findById(booking.user).then(customer => {
+        User.findById(booking.user).then(async (customer) => {
+            if (!customer) return;
+
+            let invoiceBuffer = null;
+            if (status === 'Confirmed') {
+                invoiceBuffer = await generateInvoiceBuffer(booking._id).catch(e => {
+                    console.error('Failed to generate invoice buffer for confirmation email:', e.message);
+                    return null;
+                });
+            }
+
             sendNotification(io, {
                 userId: booking.user,
-                userEmail: customer ? customer.email : '',
+                userEmail: customer.email,
                 title: status === 'Confirmed' ? 'Booking Confirmed! 🎊' : `Booking Update: ${status}`,
                 message: status === 'Confirmed' 
-                    ? `Great news! Your stay at ${booking.hotel.name} has been officially confirmed by the manager. We look forward to welcoming you!`
+                    ? `Great news! Your stay at ${booking.hotel.name} has been officially confirmed by the manager. We have attached your invoice below. We look forward to welcoming you!`
                     : `Your booking at ${booking.hotel.name} is now ${status}.`,
                 type: status === 'Cancelled' ? 'cancellation' : 'booking',
-                link: '/dashboard',
+                link: status === 'Confirmed' ? null : '/dashboard',
                 payload: status === 'Confirmed' ? {
                     'Hotel': booking.hotel.name,
                     'Check-in': new Date(booking.checkIn).toLocaleDateString(),
                     'Check-out': new Date(booking.checkOut).toLocaleDateString(),
                     'Total Price': `₹${booking.totalPrice}`,
                     'Status': 'Confirmed'
-                } : null
+                } : null,
+                attachments: invoiceBuffer ? [{
+                    filename: `invoice_${booking._id.toString().slice(-6)}.pdf`,
+                    content: invoiceBuffer
+                }] : []
             }).catch(e => console.error('Status notif error:', e.message));
         }).catch(e => console.error('Customer lookup error:', e.message));
     } catch (error) {
