@@ -178,7 +178,11 @@ const Payment = () => {
                         onChange={() => setStripeType('upi')}
                         style={{ accentColor: 'var(--primary)', width: '18px', height: '18px' }}
                       />
-                      <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--secondary)' }}>UPI</span>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <img src="https://img.icons8.com/color/48/google-pay-india.png" alt="gpay" style={{ height: '16px' }} />
+                        <img src="https://img.icons8.com/color/48/phonepe.png" alt="phonepe" style={{ height: '16px' }} />
+                        <img src="https://img.icons8.com/color/48/paytm.png" alt="paytm" style={{ height: '16px' }} />
+                      </div>
                     </label>
                   </div>
 
@@ -218,12 +222,10 @@ const Payment = () => {
                       <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-light)', marginBottom: '5px', display: 'block' }}>UPI ID</label>
                       <div style={{ position: 'relative' }}>
                         <input type="text" placeholder="username@bankid" className="payment-input" style={{ width: '100%', padding: '12px 15px', borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '1rem' }} />
-                        <div style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          <img src="https://img.icons8.com/color/48/google-pay-india.png" alt="gpay" style={{ height: '18px' }} />
-                          <img src="https://img.icons8.com/color/48/phonepe.png" alt="phonepe" style={{ height: '18px' }} />
-                          <img src="https://img.icons8.com/color/48/paytm.png" alt="paytm" style={{ height: '18px' }} />
-                          <div style={{ height: '14px', width: '1px', backgroundColor: '#e5e7eb', margin: '0 2px' }}></div>
-                          <img src="https://img.icons8.com/color/32/upi.png" alt="upi" style={{ height: '18px' }} />
+                        <div style={{ position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                          <img src="https://img.icons8.com/color/48/google-pay-india.png" alt="gpay" style={{ height: '22px' }} />
+                          <img src="https://img.icons8.com/color/48/phone-pe.png" alt="phonepe" style={{ height: '22px' }} />
+                          <img src="https://img.icons8.com/color/48/paytm.png" alt="paytm" style={{ height: '22px' }} />
                         </div>
                       </div>
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginTop: '8px' }}>Enter your VPA ID to pay with apps like GPay or PhonePe</p>
