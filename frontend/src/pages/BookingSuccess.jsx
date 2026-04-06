@@ -14,6 +14,18 @@ const BookingSuccess = () => {
   useEffect(() => {
     const fetchBooking = async () => {
       try {
+        const queryParams = new URLSearchParams(window.location.search);
+        const sessionId = queryParams.get('session_id');
+
+        // If redirected from Stripe success, finalize payment in DB
+        if (sessionId) {
+          try {
+            await api.put(`/bookings/${bookingId}/pay`);
+          } catch (paymentErr) {
+            console.error('Finalizing payment failed:', paymentErr);
+          }
+        }
+
         const { data } = await api.get(`/bookings/${bookingId}`);
         setBooking(data);
       } catch (err) {

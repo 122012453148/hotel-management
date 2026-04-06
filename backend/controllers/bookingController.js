@@ -6,6 +6,7 @@ const PDFDocument = require('pdfkit');
 const sendNotification = require('../utils/notificationUtil');
 const { generateToken } = require('./authController');
 const { generateInvoiceBuffer } = require('../utils/pdfGenerator');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // @desc Create a new booking
 // @route POST /api/bookings
@@ -64,7 +65,45 @@ exports.getBookingById = async (req, res) => {
     }
 };
 
-// @desc Update payment status
+// @desc Create Stripe Checkout Session for Card and UPI
+// @route POST /api/bookings/:id/create-checkout-session
+// @access Private
+exports.createStripeCheckoutSession = async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.id).populate('hotel');
+        if (!booking) return res.status(404).json({ message: 'Booking not found' });
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card', 'upi'], // As requested: Card and UPI
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'inr',
+                        product_data: {
+                            name: `Booking at ${booking.hotel.name}`,
+                            description: `Stay from ${new Date(booking.checkIn).toLocaleDateString()} to ${new Date(booking.checkOut).toLocaleDateString()}`,
+                        },
+                        unit_amount: Math.round(booking.totalPrice * 100),
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/booking-success/${booking._id}?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/${booking._id}`,
+            metadata: {
+                bookingId: booking._id.toString()
+            }
+        });
+
+        res.status(200).json({ url: session.url });
+    } catch (error) {
+        console.error('Stripe Checkout Error:', error.message);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc Update payment status after successful payment
 // @route PUT /api/bookings/:id/pay
 // @access Private
 exports.updatePaymentStatus = async (req, res) => {

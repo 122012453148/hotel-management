@@ -11,6 +11,7 @@ const Payment = () => {
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
   const [method, setMethod] = useState('razorpay');
+  const [stripeType, setStripeType] = useState('card');
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -29,7 +30,16 @@ const Payment = () => {
   const handlePayment = async () => {
     try {
       setPaying(true);
-      // Simulate gateway delay
+
+      if (method === 'stripe') {
+        const { data } = await api.post(`/bookings/${bookingId}/create-checkout-session`);
+        if (data.url) {
+            window.location.href = data.url;
+            return;
+        }
+      }
+
+      // Simulate gateway delay for Razorpay
       await new Promise(resolve => setTimeout(resolve, 2000));
       await api.put(`/bookings/${bookingId}/pay`);
       navigate(`/booking-success/${bookingId}`);
@@ -120,24 +130,62 @@ const Payment = () => {
             </label>
 
             <label style={{ 
-              display: 'flex', alignItems: 'center', gap: '1.5rem', padding: '1.5rem', 
+              display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '1.5rem', 
               borderRadius: '20px', border: method === 'stripe' ? '2px solid var(--primary)' : '2px solid #f3f4f6',
               backgroundColor: method === 'stripe' ? '#fffaf5' : 'transparent',
               cursor: 'pointer', transition: 'all 0.2s'
             }}>
-              <input 
-                type="radio" 
-                name="payment" 
-                value="stripe" 
-                checked={method === 'stripe'} 
-                onChange={(e) => setMethod(e.target.value)}
-                style={{ width: '20px', height: '20px', accentColor: 'var(--primary)' }}
-              />
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
-                <CreditCard size={24} color={method === 'stripe' ? 'var(--primary)' : '#9ca3af'} />
-                <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>Stripe</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }} onClick={() => setMethod('stripe')}>
+                <input 
+                  type="radio" 
+                  name="payment" 
+                  value="stripe" 
+                  checked={method === 'stripe'} 
+                  readOnly
+                  style={{ width: '20px', height: '20px', accentColor: 'var(--primary)' }}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+                  <CreditCard size={24} color={method === 'stripe' ? 'var(--primary)' : '#9ca3af'} />
+                  <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>Stripe</span>
+                </div>
+                <CheckCircle2 size={24} color="var(--primary)" style={{ opacity: method === 'stripe' ? 1 : 0 }} />
               </div>
-              <CheckCircle2 size={24} color="var(--primary)" style={{ opacity: method === 'stripe' ? 1 : 0 }} />
+
+              {method === 'stripe' && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }} 
+                  animate={{ height: 'auto', opacity: 1 }}
+                  style={{ marginLeft: '3.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid #e5e7eb', paddingTop: '1rem', marginTop: '0.5rem' }}
+                >
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                    <input 
+                      type="radio" 
+                      name="stripeType" 
+                      value="card" 
+                      checked={stripeType === 'card'} 
+                      onChange={() => setStripeType('card')}
+                      style={{ accentColor: 'var(--primary)' }}
+                    />
+                    <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--secondary)' }}>Credit / Debit Card</span>
+                    <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
+                       <img src="https://img.icons8.com/color/32/visa.png" alt="visa" style={{ height: '16px' }} />
+                       <img src="https://img.icons8.com/color/32/mastercard.png" alt="mastercard" style={{ height: '16px' }} />
+                    </div>
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                    <input 
+                      type="radio" 
+                      name="stripeType" 
+                      value="upi" 
+                      checked={stripeType === 'upi'} 
+                      onChange={() => setStripeType('upi')}
+                      style={{ accentColor: 'var(--primary)' }}
+                    />
+                    <span style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--secondary)' }}>UPI (Google Pay, PhonePe, etc.)</span>
+                    <img src="https://img.icons8.com/color/32/upi.png" alt="upi" style={{ height: '16px', marginLeft: 'auto' }} />
+                  </label>
+                </motion.div>
+              )}
             </label>
           </div>
 

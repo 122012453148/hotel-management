@@ -11,7 +11,8 @@ const {
     updateBookingStatus,
     generateInvoice,
     verifyQRCode,
-    getAnalytics
+    getAnalytics,
+    createStripeCheckoutSession
 } = require('../controllers/bookingController');
 
 router.get('/analytics', protect, authorize('manager', 'admin'), getAnalytics);
@@ -21,6 +22,7 @@ router.route('/')
     .get(protect, authorize('manager', 'admin'), getAllBookings)
     .post(protect, createBooking);
 
+router.post('/:id/create-checkout-session', protect, createStripeCheckoutSession);
 router.get('/mybookings', protect, getMyBookings);
 router.route('/:id')
     .get(protect, getBookingById)
